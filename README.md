@@ -34,7 +34,7 @@ We are **Runtime Terror**, a team of elite (or so we like to think) coders who t
 2. **Step 2**: Run the code.  
 3. **Step 3**: Watch the code explode in runtime terror.  
 4. **Step 4**: Debug for hours, fix it, and then introduce 3 new bugs.  
-5. **Step 5**: Celebrate like we just cured cancer when it finally works.
+5. **Step 5**: Celebrate when Stack Overflow fixes our issues.
 
 ---
 
