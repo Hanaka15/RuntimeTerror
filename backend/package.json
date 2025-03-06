@@ -1,0 +1,22 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon ./server.js",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "jahn",
+  "license": "MIT",
+  "description": "Cool Projects Dudes",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "nodemon": "*"
+  }
+}
