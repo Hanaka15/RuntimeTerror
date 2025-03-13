@@ -1,13 +1,29 @@
-require('dotenv').config()
-const express = require('express');
+const express = require("express");
+const mongoose = require("mongoose");
+const passport = require("./strategies/local.strategy");
+const sessionConfig = require("./config/session");
+const authRoutes = require("./routes/auth.routes");
+const helmet = require("helmet");
+const cors = require("cors");
+require("dotenv").config();
+
 const app = express();
 
+// Middleware
 app.use(express.json());
-app.use('/', require('./routes/indexRouter'));
-app.use('/dashboard', require('./routes/indexRouter'))
+app.use(helmet());
+app.use(cors());
+app.use(sessionConfig);
+app.use(passport.initialize());
+app.use(passport.session());
 
-const PORT = process.env.PORT || 3000;
+// Routes
+app.use("/auth", authRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI).then(() => {
+  console.log("✅ MongoDB Connected");
 });
+
+// Start server
+app.listen(3000, () => console.log("🚀 Server running on http://localhost:3000"));
