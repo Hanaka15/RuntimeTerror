@@ -14,13 +14,13 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 // Routes
-app.use("/auth", require("./routes/auth.router"));
-app.use("/workspace", require("./routes/workspace.router"))
+app.use("/auth", require("./routes/auth.routes"));
+app.use("/workspace", require("./routes/workspace.routes"))
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI,
-).then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("MongoDB Connected"))
+.catch((err) => console.log(err));
 
 // Start Server
 app.listen(3000, () => console.log("Server running on port 3000"));
