@@ -1,12 +1,12 @@
 const express = require("express");
 const passport = require("passport");
-const AuthController = require("../controllers/AuthController");
-const rateLimiter = require("../utils/rateLimiter");
+const AuthController = require("../controllers/auth.controller");
 
 const router = express.Router();
 
 router.post("/register", AuthController.register);
-router.post("/login", rateLimiter, passport.authenticate("local"), AuthController.login);
+router.post("/login", passport.authenticate("local", { session: false }), AuthController.login);
+router.post("/refresh", AuthController.refreshToken);
 router.post("/logout", AuthController.logout);
 
 module.exports = router;

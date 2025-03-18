@@ -1,29 +1,26 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const passport = require("./strategies/local.strategy");
-const sessionConfig = require("./config/session");
-const authRoutes = require("./routes/auth.routes");
-const helmet = require("helmet");
-const cors = require("cors");
 require("dotenv").config();
+const express = require("express");
+const passport = require("passport");
+const cookieParser = require("cookie-parser");
+const mongoose = require("mongoose");
+
+require("./config/passport");
 
 const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(helmet());
-app.use(cors());
-app.use(sessionConfig);
+app.use(cookieParser());
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Routes
-app.use("/auth", authRoutes);
+app.use("/auth", require("./routes/auth.router"));
+app.use("/workspace", require("./routes/workspace.router"))
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI).then(() => {
-  console.log("✅ MongoDB Connected");
-});
+mongoose.connect(process.env.MONGO_URI,
+).then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
-// Start server
-app.listen(3000, () => console.log("🚀 Server running on http://localhost:3000"));
+// Start Server
+app.listen(3000, () => console.log("Server running on port 3000"));
