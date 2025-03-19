@@ -4,7 +4,7 @@ class WorkspaceController {
     static async createWorkspace(req, res) {
         try {
             const { name } = req.body;
-            const userId = req.user.id; // Extract user ID from token
+            const userId = req.user.id;
 
             // Create a new workspace
             const workspace = new Workspace({

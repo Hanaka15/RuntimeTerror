@@ -1,4 +1,6 @@
+const { default: mongoose } = require("mongoose");
 const User = require("../models/user.model");
+const Token = require("../models/tokens.model");
 const jwt = require("jsonwebtoken");
 
 class AuthController {
@@ -28,11 +30,13 @@ class AuthController {
       const user = req.user; // Passport adds this to the request
 
       // Generate JWT tokens
-      const accessToken = jwt.sign( { id: user.id }, process.env.JWT_SECRET || "123123123", { expiresIn: "15m" }
-      );
+      const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+        expiresIn: "15m",
+      });
+
       const refreshToken = jwt.sign(
         { id: user.id },
-        process.env.JWT_REFRESH_SECRET || "123123123",
+        process.env.JWT_REFRESH_SECRET,
         { expiresIn: "30d" }
       );
 
@@ -48,8 +52,16 @@ class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 1000 * 60 * 15, // 15 min
+        maxAge: 1000 * 60 * 10, // 15 min
       });
+
+      const newToken = new Token({
+        userId: user.id,
+        token: refreshToken,
+        expire: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+      });
+
+      await newToken.save();
 
       res.json({ message: "Logged in", accessToken, refreshToken });
     } catch (error) {
@@ -63,6 +75,7 @@ class AuthController {
   static logout(req, res) {
     res.clearCookie("refreshToken");
     res.json({ message: "Logged out" });
+    Token.deleteOne({token: req.cookies.refreshToken})
   }
 
   /**
@@ -70,13 +83,14 @@ class AuthController {
    */
   static async refreshToken(req, res) {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
+    if (!refreshToken && !await Token.findOne({ token: refreshToken }) ) return res.status(401).json({ message: "Unauthorized" });
 
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
-      if (err) return res.status(403).json({ message: "Invalid refresh token" });
+      if (err)
+        return res.status(403).json({ message: "Invalid refresh token" });
 
       const accessToken = jwt.sign(
-        { id: user.id },
+        { id: user.id }, 
         process.env.JWT_SECRET,
         { expiresIn: "15m" }
       );
