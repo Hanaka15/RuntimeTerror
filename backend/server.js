@@ -4,8 +4,6 @@ const passport = require("passport");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 
-require("./config/passport");
-
 const app = express();
 
 // Middleware

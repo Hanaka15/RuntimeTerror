@@ -45,9 +45,6 @@ class AuthController {
         { expiresIn: "30d" }
       );
 
-      // Store refresh token in the database
-      await RefreshToken.create({ token: refreshToken, userId: user.id });
-
       // Set refresh token in cookies
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -80,12 +77,11 @@ class AuthController {
   static async logout(req, res) {
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
-      await RefreshToken.findOneAndDelete({ token: refreshToken });
+      await Token.findOneAndDelete({ token: refreshToken });
     }
 
     res.clearCookie("refreshToken");
     res.json({ message: "Logged out" });
-    Token.deleteOne({token: req.cookies.refreshToken})
   }
 
   static async refreshToken(req, res) {
