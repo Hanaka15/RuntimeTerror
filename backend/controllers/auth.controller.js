@@ -2,32 +2,37 @@ const { default: mongoose } = require("mongoose");
 const User = require("../models/user.model");
 const Token = require("../models/tokens.model");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 class AuthController {
-  /**
-   * Register a new user
-   */
   static async register(req, res) {
+    const { username, password } = req.body;
+
     try {
-      const { username, password } = req.body;
+      // Check if user already exists
       if (await User.findOne({ username })) {
         return res.status(400).json({ message: "User already exists" });
       }
 
-      const newUser = new User({ username, password });
+      // Hash password and create a new user
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new User({ username: username.trim(), password: hashedPassword });
       await newUser.save();
-      res.status(201).json({ message: "User registered" });
+
+      res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
       res.status(500).json({ message: "Server error", error });
     }
   }
 
-  /**
-   * Login User and Generate JWT Tokens
-   */
   static async login(req, res) {
+    const { username, password } = req.body;
+
     try {
-      const user = req.user; // Passport adds this to the request
+      const user = await User.findOne({ username });
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
 
       // Generate JWT tokens
       const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -40,7 +45,10 @@ class AuthController {
         { expiresIn: "30d" }
       );
 
-      // Store refresh token in HTTP-only cookie
+      // Store refresh token in the database
+      await RefreshToken.create({ token: refreshToken, userId: user.id });
+
+      // Set refresh token in cookies
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -69,18 +77,17 @@ class AuthController {
     }
   }
 
-  /**
-   * Logout and Clear Refresh Token
-   */
-  static logout(req, res) {
+  static async logout(req, res) {
+    const refreshToken = req.cookies.refreshToken;
+    if (refreshToken) {
+      await RefreshToken.findOneAndDelete({ token: refreshToken });
+    }
+
     res.clearCookie("refreshToken");
     res.json({ message: "Logged out" });
     Token.deleteOne({token: req.cookies.refreshToken})
   }
 
-  /**
-   * Refresh Token Endpoint
-   */
   static async refreshToken(req, res) {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken && !await Token.findOne({ token: refreshToken }) ) return res.status(401).json({ message: "Unauthorized" });
