@@ -4,7 +4,6 @@ const { authenticateToken } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-// Route to create a workspace (Protected)
 router.post("/create", authenticateToken, WorkspaceController.createWorkspace);
 
 module.exports = router;

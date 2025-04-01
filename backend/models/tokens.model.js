@@ -1,20 +1,50 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const snowflake = require("../utils/snowflake");
 
-const TokenSchema = new mongoose.Schema({
+const Token = sequelize.define(
+  "Token",
+  {
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false,
+      defaultValue: () => snowflake.generate(),
+    },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+      type: DataTypes.INTEGER,
+      references: {
+        model: "User",
+        key: "id",
+      },
+      allowNull: false,
     },
     token: {
-        type: String,
-        required: true
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     expire: {
-        type: Date,
-        require: true,
-        default: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
-    }
-});
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: () => new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+    },
+  },
+  {
+    timestamps: false,
+  }
+);
 
-module.exports = mongoose.model("Token", TokenSchema);
+Token.prototype.invalidateToken = async function () {
+  await this.destroy();
+};
+
+Token.cleanupExpiredTokens = async function () {
+  await Token.destroy({
+    where: {
+      expire: {
+        [Op.lt]: new Date(),
+      },
+    },
+  });
+};
+
+module.exports = Token;

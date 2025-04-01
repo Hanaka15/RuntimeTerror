@@ -6,7 +6,6 @@ class WorkspaceController {
             const { name } = req.body;
             const userId = req.user.id;
 
-            // Create a new workspace
             const workspace = new Workspace({
                 name,
                 owner: userId

@@ -1,22 +1,41 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
 const bcrypt = require("bcryptjs");
+const snowflake = require("../utils/snowflake")
 
-const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+const User = sequelize.define("User", {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: () => snowflake.generate(),
+  },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+}, {
+  timestamps: true,
 });
 
-// Hash password before saving
-UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+User.beforeCreate(async (user) => {
   const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+  user.password = await bcrypt.hash(user.password, salt);
 });
 
-// Compare passwords
-UserSchema.methods.comparePassword = function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+User.beforeUpdate(async (user) => {
+  if (user.changed("password")) {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+  }
+});
+
+User.prototype.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = User;

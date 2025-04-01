@@ -1,19 +1,36 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const User = require("./User");
+const snowflake = require("../utils/snowflake");
 
-const WorkspaceSchema = new mongoose.Schema({
+const Workspace = sequelize.define(
+  "Workspace",
+  {
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false,
+      defaultValue: () => snowflake.generate(),
+    },
     name: {
-        type: String,
-        required: true
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+    ownerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      },
+      onDelete: "CASCADE",
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-});
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model("Workspace", WorkspaceSchema);
+User.hasMany(Workspace, { foreignKey: "ownerId" });
+Workspace.belongsTo(User, { foreignKey: "ownerId" });
+
+module.exports = Workspace;
