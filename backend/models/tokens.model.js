@@ -1,4 +1,5 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Op } = require("sequelize");
+const sequelize = require("../db");
 const snowflake = require("../utils/snowflake");
 
 const Token = sequelize.define(
@@ -11,12 +12,13 @@ const Token = sequelize.define(
       defaultValue: () => snowflake.generate(),
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,  // ✅ Matches `User.id`
       references: {
-        model: "User",
+        model: "Users", // ✅ Ensure correct table name
         key: "id",
       },
       allowNull: false,
+      onDelete: "CASCADE",
     },
     token: {
       type: DataTypes.STRING,
@@ -25,7 +27,6 @@ const Token = sequelize.define(
     expire: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: () => new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
     },
   },
   {
@@ -33,10 +34,12 @@ const Token = sequelize.define(
   }
 );
 
-Token.prototype.invalidateToken = async function () {
-  await this.destroy();
-};
+// Auto-set expiration date
+Token.beforeCreate((token) => {
+  token.expire = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
+});
 
+// Cleanup expired tokens
 Token.cleanupExpiredTokens = async function () {
   await Token.destroy({
     where: {

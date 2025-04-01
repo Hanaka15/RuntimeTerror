@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
+const Validator = require("./middleware/validation.middleware")
 const sequelize = require("./db");
 
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
+app.use(Validator.Errors);
 
 // Routes
 app.use("/auth", require("./routes/auth.routes"));

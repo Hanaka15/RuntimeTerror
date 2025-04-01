@@ -1,18 +1,11 @@
 const express = require("express");
-const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const AuthController = require("../controllers/auth.controller");
+const Validator = require("../middleware/validation.middleware")
 
-// Register route
-router.post("/register", AuthController.register);
-
-// Login route
-router.post("/login", AuthController.login);
-
-// Logout route
+router.post("/register", Validator.validateRegister, AuthController.register);
+router.post("/login", Validator.validateLogin, AuthController.login);
 router.post("/logout", AuthController.logout);
-
-// Refresh token
 router.post("/refresh-token", AuthController.refreshToken);
 
 module.exports = router;

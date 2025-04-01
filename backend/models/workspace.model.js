@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
-const User = require("./User");
+const sequelize = require("../db");
+const User = require("./user.model");
 const snowflake = require("../utils/snowflake");
 
 const Workspace = sequelize.define(
@@ -16,10 +17,10 @@ const Workspace = sequelize.define(
       allowNull: false,
     },
     ownerId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING, // ✅ Matches `User.id`
       allowNull: false,
       references: {
-        model: User,
+        model: "Users", // ✅ Ensure correct table name
         key: "id",
       },
       onDelete: "CASCADE",
@@ -30,7 +31,8 @@ const Workspace = sequelize.define(
   }
 );
 
-User.hasMany(Workspace, { foreignKey: "ownerId" });
+// Define relationships
+User.hasMany(Workspace, { foreignKey: "ownerId", onDelete: "CASCADE" });
 Workspace.belongsTo(User, { foreignKey: "ownerId" });
 
 module.exports = Workspace;
