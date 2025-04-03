@@ -17,8 +17,9 @@ app.use(Validator.Errors);
 app.use("/auth", require("./routes/auth.routes"));
 app.use("/workspace", require("./routes/workspace.routes"));
 
+
 // Sync Models
-sequelize.sync()
+sequelize.sync( {force: false} )
   .then(() => console.log("Models synchronized with PostgreSQL"))
   .catch((err) => console.log("Error syncing models:", err));
 

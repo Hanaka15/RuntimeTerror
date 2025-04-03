@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../db");
 const snowflake = require("../utils/snowflake");
+const Quiz = require("./quiz.model"); //Import the Quiz model
 
 const Question = sequelize.define(
     "Question",
@@ -38,4 +39,6 @@ const Question = sequelize.define(
     }
 );
 
+Quiz.hasMany(Question, {foreignkey:"questionId", ondelete:"CASCADE"}); //One to many relationship with Question table
+Question.belongsTo(Quiz, {foreignkey:"questionId"});
 module.exports = Question;

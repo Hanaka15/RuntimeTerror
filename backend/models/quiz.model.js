@@ -1,11 +1,9 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../db");
-const bcrypt = require("bcryptjs");
 const snowflake = require("../utils/snowflake");
 
 const Quiz = sequelize.define(
-    "Quiz",
-    {
+    "Quiz", {
         id: {
             type: DataTypes.STRING,
             primaryKey: true,
@@ -30,5 +28,6 @@ const Quiz = sequelize.define(
         }
     }
 );
+
 
 module.exports = Quiz;
