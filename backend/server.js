@@ -11,7 +11,12 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
-app.use(Validator.Errors);
+
+// Global error handler (for other errors)
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
 
 // Routes
 app.use("/auth", require("./routes/auth.routes"));

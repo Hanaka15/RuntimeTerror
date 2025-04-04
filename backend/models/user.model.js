@@ -1,7 +1,9 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../db");
 const bcrypt = require("bcryptjs");
-const snowflake = require("../utils/snowflake");
+const Snowflake = require("../utils/snowflake"); 
+
+const snowflake = new Snowflake();
 
 const User = sequelize.define(
   "User",

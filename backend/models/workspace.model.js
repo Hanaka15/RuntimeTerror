@@ -17,10 +17,10 @@ const Workspace = sequelize.define(
       allowNull: false,
     },
     ownerId: {
-      type: DataTypes.STRING, // ✅ Matches `User.id`
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
-        model: "Users", // ✅ Ensure correct table name
+        model: "Users",
         key: "id",
       },
       onDelete: "CASCADE",

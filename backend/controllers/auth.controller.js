@@ -1,16 +1,15 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { User } = require("../models/user.model");
-const { Token } = require("../models/tokens.model");
+const User  = require("../models/user.model");
+const Token = require("../models/tokens.model");
 
 class AuthController {
   static async register(req, res) {
     const { username, password } = req.body;
 
     try {
-      // Check if user already exists
       const existingUser = await User.findOne({
-        where: { username },
+        where: { username }
       });
 
       if (existingUser) {
@@ -32,6 +31,7 @@ class AuthController {
   }
 
   static async login(req, res) {
+    console.log("auth controller")
     const { username, password } = req.body;
 
     try {
