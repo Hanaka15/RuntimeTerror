@@ -12,11 +12,5 @@ sequelize
   .authenticate()
   .then(() => console.log("PostgreSQL Connected"))
   .catch((err) => console.log("Error connecting to PostgreSQL:", err));
-
-// Sync tables
-sequelize
-  .sync()
-  .then(() => console.log("Models synchronized with PostgreSQL"))
-  .catch((err) => console.log("Error syncing models:", err));
-
+  
 module.exports = sequelize;

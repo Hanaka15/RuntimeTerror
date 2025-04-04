@@ -1,30 +1,28 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { User } = require("../models/user.model");
-const { Token } = require("../models/tokens.model");
+const { Researcher, Token }  = require("../models");
 
 class AuthController {
   static async register(req, res) {
     const { username, password } = req.body;
 
     try {
-      // Check if user already exists
-      const existingUser = await User.findOne({
-        where: { username },
+      const existingResearcher = await Researcher.findOne({
+        where: { username }
       });
 
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
+      if (existingResearcher) {
+        return res.status(400).json({ message: "Researcher already exists" });
       }
 
       // Hash password and create a new user
       const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = await User.create({
+      const newResearcher = await Researcher.create({
         username: username.trim(),
         password: hashedPassword,
       });
 
-      res.status(201).json({ message: "User registered successfully" });
+      res.status(201).json({ message: "Researcher registered successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server error", error });
@@ -32,10 +30,11 @@ class AuthController {
   }
 
   static async login(req, res) {
+    console.log("auth controller")
     const { username, password } = req.body;
 
     try {
-      const user = await User.findOne({ where: { username } });
+      const user = await Researcher.findOne({ where: { username } });
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ message: "Invalid credentials" });
       }

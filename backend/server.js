@@ -2,8 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
-const Validator = require("./middleware/validation.middleware")
-const sequelize = require("./db");
+const { syncDB } = require("./models");
 
 const app = express();
 
@@ -11,16 +10,18 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
-app.use(Validator.Errors);
+
+syncDB();
+
+// Global error handler (for other errors)
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
 
 // Routes
 app.use("/auth", require("./routes/auth.routes"));
 app.use("/workspace", require("./routes/workspace.routes"));
-
-// Sync Models
-sequelize.sync()
-  .then(() => console.log("Models synchronized with PostgreSQL"))
-  .catch((err) => console.log("Error syncing models:", err));
 
 // Start Server
 app.listen(3000, () => console.log("Server running on port 3000"));

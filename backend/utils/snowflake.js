@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-class SimpleSnowflake {
+class Snowflake {
   constructor() {
     this.machineId = parseInt(process.env.MACHINE_ID, 10);
     this.epoch = parseInt(process.env.EPOCH, 10);
@@ -33,4 +33,4 @@ class SimpleSnowflake {
   }
 }
 
-module.exports = SimpleSnowflake;
+module.exports = Snowflake;
