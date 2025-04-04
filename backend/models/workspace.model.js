@@ -1,38 +1,19 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../db");
-const User = require("./user.model");
-const snowflake = require("../utils/snowflake");
+module.exports = (sequelize, DataTypes) => {
+  const Workspace = sequelize.define("Workspace", {
+    id: { type: DataTypes.STRING, primaryKey: true, allowNull: false, defaultValue: () => require("../utils/snowflake").generate() },
+    name: { type: DataTypes.STRING, allowNull: false },
+    ownerId: { type: DataTypes.STRING, allowNull: false }
+  });
 
-const Workspace = sequelize.define(
-  "Workspace",
-  {
-    id: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-      allowNull: false,
-      defaultValue: () => snowflake.generate(),
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    ownerId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      references: {
-        model: "Users",
-        key: "id",
-      },
-      onDelete: "CASCADE",
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+  Workspace.associate = (models) => {
+    Workspace.belongsTo(models.Researcher, { foreignKey: "ownerId", as: "owner" });
+    Workspace.hasMany(models.Study, { foreignKey: "workspaceId", as: "quizzes" });
+    Workspace.belongsToMany(models.Researcher, {
+      through: models.WorkspaceResearcher,
+      as: "researchers",
+      foreignKey: "workspaceId"
+    });
+  };
 
-// Define relationships
-User.hasMany(Workspace, { foreignKey: "ownerId", onDelete: "CASCADE" });
-Workspace.belongsTo(User, { foreignKey: "ownerId" });
-
-module.exports = Workspace;
+  return Workspace;
+};
