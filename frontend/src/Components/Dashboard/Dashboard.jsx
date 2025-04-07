@@ -1,16 +1,18 @@
-import React from 'react'
-import './Dashboard.css'
+// src/Components/Dashboard/Dashboard.jsx
+import React from 'react';
+import Navigation from './Navigation';
+import './Dashboard.css';
 
 const Dashboard = () => {
     return (
         <>
-        <div class="parent">
-        <div class="div1"><div class="panel"></div></div>
-        <div class="div2"><div class="panel"></div></div>
-        <div class="div3"><div class="panel"></div></div>
-    </div> 
+        <div className="parent">
+            <div className="div1"><div className="panel"></div></div>
+            <nav><Navigation /></nav>
+            <div className="div3"><div className="panel"></div></div>
+        </div> 
         </>
-    )
-}
+    );
+};
 
-export default Dashboard
+export default Dashboard;
