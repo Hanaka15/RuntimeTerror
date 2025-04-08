@@ -33,4 +33,9 @@ class Snowflake {
   }
 }
 
-module.exports = Snowflake;
+// 🔥 Shared instance here
+const snowflakeInstance = new Snowflake();
+
+module.exports = {
+  generate: () => snowflakeInstance.generate()
+};

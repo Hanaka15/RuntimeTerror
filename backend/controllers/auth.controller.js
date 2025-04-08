@@ -4,11 +4,11 @@ const { Researcher, Token }  = require("../models");
 
 class AuthController {
   static async register(req, res) {
-    const { username, password } = req.body;
+    const { name, password, email } = req.body;
 
     try {
       const existingResearcher = await Researcher.findOne({
-        where: { username }
+        where: { name }
       });
 
       if (existingResearcher) {
@@ -18,8 +18,9 @@ class AuthController {
       // Hash password and create a new user
       const hashedPassword = await bcrypt.hash(password, 10);
       const newResearcher = await Researcher.create({
-        username: username.trim(),
+        name: name,
         password: hashedPassword,
+        email: email
       });
 
       res.status(201).json({ message: "Researcher registered successfully" });
@@ -31,10 +32,10 @@ class AuthController {
 
   static async login(req, res) {
     console.log("auth controller")
-    const { username, password } = req.body;
+    const { name, password } = req.body;
 
     try {
-      const user = await Researcher.findOne({ where: { username } });
+      const user = await Researcher.findOne({ where: { name } });
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ message: "Invalid credentials" });
       }

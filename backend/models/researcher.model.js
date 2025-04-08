@@ -1,8 +1,9 @@
 const bcrypt = require("bcryptjs");
+const { generate } = require("../utils/snowflake");
 
 module.exports = (sequelize, DataTypes) => {
   const Researcher = sequelize.define("Researcher", {
-    id: { type: DataTypes.STRING, primaryKey: true, allowNull: false, defaultValue: () => require("../utils/snowflake").generate() },
+    id: { type: DataTypes.STRING, primaryKey: true, allowNull: false },
     name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     passwordHash: { type: DataTypes.STRING, allowNull: false },
@@ -18,6 +19,9 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Researcher.beforeCreate(async (researcher) => {
+    if (!researcher.id) {
+      researcher.id = generate();
+    }
     researcher.passwordHash = await bcrypt.hash(researcher.passwordHash, 10);
   });
 

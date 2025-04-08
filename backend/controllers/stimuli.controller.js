@@ -1,21 +1,21 @@
-const { Stimuli } = require("../models");
+const { Stimulus } = require("../models");
 
 class StimuliController {
     static async uploadStimuli(req, res) {
         try {
-            const {  } = req.body;
-            const studyId = req.study.id;
+            const { stimulifile } = req.body;
+            const questionId = req.question.id;
 
-            const question = new Question({
-                questiontext,
+            const stimuli = new Stimulus({
+                stimulifile,
                 owner: questionId
             });
 
             await stimuli.save();
 
-            res.status(201).json({ message: "Question created successfully", question });
+            res.status(201).json({ message: "Stimuli uploaded successfully", stimuli });
         } catch(error) {
-            console.error("Question Creation Error: ", error);
+            console.error("Stimuli Upload Error: ", error);
             res.status(500).json({ message: "Server error", error: error.message });
         }
     }

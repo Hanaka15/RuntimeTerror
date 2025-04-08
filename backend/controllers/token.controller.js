@@ -1,32 +1,30 @@
-const { Workspace } = require("../models");
+const { Token } = require("../models");
 
-/* class WorkspaceController {
-    static async createWorkspace(req, res) {
+class TokenController {
+    static async createToken(req, res) { // ordner den faktisk token?
         try {
-            const { name } = req.body;
-            const userId = req.user.id;
+            //const { name } = req.body;
+            //const researcherId = req.researcher.id;
 
-            const workspace = new Workspace({
-                name,
-                owner: userId
+            const token = new Token({
+            //    name,
+            //    owner: researcherId
             });
 
-            await workspace.save();
+            await token.save();
 
-            res.status(201).json({ message: "Workspace created successfully", workspace });
+            res.status(201).json({ message: "Token created successfully", token });
         } catch (error) {
-            console.error("Workspace Creation Error:", error);
+            console.error("Token Creation Error:", error);
             res.status(500).json({ message: "Server error", error: error.message });
         }
     }
-} */
+}
 
-class WorkspaceController {
+module.exports = TokenController;
+
+/* class WorkspaceController {
     static async createWorkspace(req, res) {
-        if (hasthispermission || hasanother) { 
-            /*let them do this*/ 
-        }
-
         try {
             const { name } = req.body;
             const researcherId = req.researcher.id;
@@ -46,4 +44,4 @@ class WorkspaceController {
     }
 }
 
-module.exports = WorkspaceController;
+module.exports = WorkspaceController; */
