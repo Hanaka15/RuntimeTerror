@@ -3,8 +3,8 @@ import React from 'react';
 import Navigation from './Navigation/Navigation';
 import TopBar from './topBar/topBar';
 import SurveyGrid from './SurveyGrid/SurveyGrid';
-import './Dashboard.css';
-import './topBar/topBar.scss';
+import './Dashboard.scss';
+import './topBar/topBar.css';
 
 const Dashboard = () => {
     return (

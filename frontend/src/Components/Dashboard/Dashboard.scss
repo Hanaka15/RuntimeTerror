@@ -7,22 +7,22 @@ $nav-width-desktop: 16rem;
 $nav-width-tablet: 12rem;
 $nav-width-mobile: 4rem;
 
-*{
+* {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-  }
-  
-  body {
+}
+
+body {
     background-color: #333333;
     color: #fff;
     height: 100vh;
     padding: 0;
     margin: 0;
     overflow-x: hidden;
-  }
-  
-  .parent {
+}
+
+.parent {
     display: grid;
     grid-template-columns: $nav-width-desktop 1fr;
     grid-template-rows: 4rem 1fr;
@@ -38,16 +38,16 @@ $nav-width-mobile: 4rem;
     @media screen and (max-width: $breakpoint-tablet) {
         grid-template-columns: $nav-width-mobile 1fr;
     }
-  }
-  
-  .panel {
+}
+
+.panel {
     width: 100%;
     border-radius: 1rem;
     height: 100%;
     background-color: #1c1c1c;
-  }
-  
-  .div1 {
+}
+
+.div1 {
     grid-area: 2 / 2 / 3 / 3;
     padding: 0.5rem;
     overflow: hidden;
@@ -58,7 +58,7 @@ $nav-width-mobile: 4rem;
         width: 100%;
         border-radius: 1rem;
         background-color: #1c1c1c;
-        padding: 5%;
+        padding: 1.5rem 2rem;
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
@@ -76,27 +76,29 @@ $nav-width-mobile: 4rem;
         &::-webkit-scrollbar-thumb {
             background: #bababa;
             border-radius: 4px;
-            
+
             &:hover {
                 background: #3c3c3c;
             }
         }
     }
-  }
-  .dashboard__nav {
+}
+
+.dashboard__nav {
     grid-area: 2/1/3/2;
     padding: 0.5rem 0 0.5rem 0.5rem;
     overflow-x: hidden;
+    height: 100%;
 
     &-container {
         width: 100%;
         border-radius: 1rem;
-        height:99vh;
         background-color: #1c1c1c;
         padding: 1rem 0;
         display: flex;
         flex-direction: column;
         overflow-x: hidden;
+        height: 100%;
     }
 
     &-separator {
@@ -118,12 +120,12 @@ $nav-width-mobile: 4rem;
     &-item {
         padding: 0 1rem;
         overflow-x: hidden;
-        
+
         &.open {
             .dropdown-arrow {
                 transform: rotate(180deg);
             }
-            
+
             .dashboard__nav-dropdown {
                 max-height: 500px;
                 opacity: 1;
@@ -136,7 +138,7 @@ $nav-width-mobile: 4rem;
         margin-bottom: 0.5rem;
         list-style: none;
         overflow-x: hidden;
-        
+
         &-item {
             display: flex;
             align-items: center;
@@ -186,7 +188,8 @@ $nav-width-mobile: 4rem;
         transition: all 0.3s ease;
         position: relative;
         overflow-x: hidden;
-        
+        width: 100%;
+
         svg {
             width: 24px;
             height: 24px;
@@ -194,7 +197,7 @@ $nav-width-mobile: 4rem;
             min-width: 24px;
             transition: transform 0.3s ease;
             flex-shrink: 0;
-            
+
             @media screen and (max-width: $breakpoint-tablet) {
                 width: 20px;
                 height: 20px;
@@ -207,7 +210,7 @@ $nav-width-mobile: 4rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            
+
             @media screen and (max-width: $breakpoint-laptop) {
                 font-size: 0.875rem;
             }
@@ -261,7 +264,7 @@ $nav-width-mobile: 4rem;
         overflow: hidden;
         transition: all 0.3s ease;
         margin-left: 2.5rem;
-        
+
         li {
             margin-top: 0.5rem;
             overflow: hidden;
@@ -280,7 +283,7 @@ $nav-width-mobile: 4rem;
         @media screen and (max-width: $breakpoint-tablet) {
             margin-left: 0;
             width: 100%;
-            
+
             li {
                 text-align: center;
             }
@@ -337,4 +340,3 @@ $nav-width-mobile: 4rem;
     padding: 0.5rem 0.5rem 0 0.5rem;
     overflow-x: hidden;
 }
-

@@ -51,10 +51,11 @@ body {
   width: 100%;
   border-radius: 1rem;
   background-color: #1c1c1c;
-  padding: 5%;
+  padding: 2rem;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  /* Custom scrollbar styling */
 }
 .div1 .panel::-webkit-scrollbar {
   width: 8px;
@@ -64,7 +65,7 @@ body {
   border-radius: 4px;
 }
 .div1 .panel::-webkit-scrollbar-thumb {
-  background: #928e8e;
+  background: #bababa;
   border-radius: 4px;
 }
 .div1 .panel::-webkit-scrollbar-thumb:hover {
