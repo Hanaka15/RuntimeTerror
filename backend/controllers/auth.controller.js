@@ -36,10 +36,10 @@ class AuthController {
 
   static async login(req, res) {
     console.log("auth controller")
-    const { username, password } = req.body;
+    const { name, password } = req.body;
 
     try {
-      const user = await Researcher.findOne({ where: { username } });
+      const user = await Researcher.findOne({ where: { name } });
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
