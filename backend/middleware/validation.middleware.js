@@ -17,7 +17,7 @@ class Validator {
   // You can define specific validation rules here
   static validateRegister() {
     return Validator.validate([
-      body('name').notEmpty().withMessage('Username is required'),
+      body('username').notEmpty().withMessage('Username is required'),
       body('password')
         .notEmpty().withMessage('Password is required')
         .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
