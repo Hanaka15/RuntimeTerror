@@ -33,4 +33,8 @@ class Snowflake {
   }
 }
 
-module.exports = Snowflake;
+const snowflake = new Snowflake();
+
+module.exports = {
+  generate: () => snowflake.generate()
+};
