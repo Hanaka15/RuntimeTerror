@@ -5,12 +5,13 @@ class QuestionController {
     //CREATE question
     static async createQuestion(req, res) {
         try {
-            const { questionText, studyId, questionId, artifacts, correctArtifactIndex, artifactType } = req.body;
-            
+            const { workspace_id, study_id } = req.params;
+            const { questionText, questionId, artifacts, correctArtifactIndex, artifactType } = req.body;
+
             const question = new Question({
                 id: questionId,
                 questionText,
-                studyId,
+                studyId: study_id,
                 artifacts,
                 correctArtifactIndex,
                 artifactType
@@ -19,16 +20,17 @@ class QuestionController {
             await question.save();
 
             res.status(201).json({ message: "Question created successfully", question });
-        } catch(error) {
+        } catch (error) {
             console.error("Question Creation Error: ", error);
             res.status(500).json({ message: "Server error", error: error.message });
         }
     }
 
     //READ all questions
-    static async getAllQuestions(req,res) {
+    static async getAllQuestions(req, res) {
         try {
-            const questions = await Question.findAll();
+            const { workspace_id, study_id } = req.params;
+            const questions = await Question.findAll({ where: { studyId: study_id } });
             res.status(200).json(questions);
         } catch (error) {
             console.error("Error fetching questions:", error);
@@ -36,12 +38,12 @@ class QuestionController {
         }
     }
     //READ single question
-    static async getQuestionById(req,res) {
+    static async getQuestionById(req, res) {
         try {
-            const { id } = req.params;
-            const question = await Question.findByPk(id);
-            
-            if(!question) {
+            const { workspace_id, study_id, question_id } = req.params;
+            const question = await Question.findOne({ where: { id: question_id, studyId: study_id } });
+
+            if (!question) {
                 return res.status(404).json({ message: "Question not found" });
             }
 
@@ -53,11 +55,11 @@ class QuestionController {
     }
 
     //UPDATE question
-    static async updateQuestion (req, res) {
+    static async updateQuestion(req, res) {
         try {
-            const { id } = req.params;
+            const { workspace_id, study_id, question_id } = req.params;
             const { questionText, artifacts, correctArtifactIndex, artifactType } = req.body;
-            const question = await Question.findByPk(id);
+            const question = await Question.findOne({ where: { id: question_id, studyId: study_id } });
 
             if (!question) {
                 return res.status(404).json({ message: "Question not found" });
@@ -69,8 +71,8 @@ class QuestionController {
             if (artifactType !== undefined) question.artifactType = artifactType;
 
             await question.save();
-            res.status(200).json({ message: "Question updated successfully", question});
-        } catch(error) {
+            res.status(200).json({ message: "Question updated successfully", question });
+        } catch (error) {
             console.error("Question update error:", error);
             res.status(500).json({ message: "Server error", error: error.message });
         }
@@ -79,8 +81,8 @@ class QuestionController {
     //DELETE question
     static async deleteQuestion(req, res) {
         try {
-            const { id } = req.params;
-            const question = await Question.findByPk(id);
+            const { workspace_id, study_id, question_id } = req.params;
+            const question = await Question.findOne({ where: { id: question_id, studyId: study_id } });
 
             if (!question) {
                 return res.status(404).json({ message: "Question not found" });

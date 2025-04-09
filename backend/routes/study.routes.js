@@ -4,18 +4,17 @@ const { authenticateToken } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-//create
-router.post("/", authenticateToken, StudyController.createStudy);
+// Create
+router.post("/workspaces/:workspace_id/studies", authenticateToken, StudyController.createStudy);
 
-//read
-router.get("/", authenticateToken, StudyController.getAllStudies);
-router.get("/:id", authenticateToken, StudyController.getStudyById);
+// Read
+router.get("/workspaces/:workspace_id/studies", authenticateToken, StudyController.getAllStudies);
+router.get("/workspaces/:workspace_id/studies/:study_id", authenticateToken, StudyController.getStudyById);
 
-//update
-router.patch("/:id", authenticateToken, StudyController.updateStudy);
+// Update
+router.patch("/workspaces/:workspace_id/studies/:study_id", authenticateToken, StudyController.updateStudy);
 
-//delete
-router.delete("/:id", authenticateToken, StudyController.deleteStudy);
-
+// Delete
+router.delete("/workspaces/:workspace_id/studies/:study_id", authenticateToken, StudyController.deleteStudy);
 
 module.exports = router;

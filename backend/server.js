@@ -21,9 +21,15 @@ app.use((err, req, res, next) => {
 
 // Routes
 app.use("/auth", require("./routes/auth.routes"));
-app.use("/workspace", require("./routes/workspace.routes"));
-app.use("/study", require("./routes/study.routes"));
-app.use("/question", require("./routes/question.routes"));
+
+//workspace
+app.use("/workspaces", require("./routes/workspace.routes"));
+
+//study
+app.use("/", require("./routes/study.routes"));
+
+//questions
+app.use("/", require("./routes/question.routes"));
 
 
 // Start Server

@@ -61,9 +61,8 @@ class WorkspaceController {
     //READ single workspace
     static async getWorkspaceById(req, res) {
         try {
-            const { id } = req.params;
-
-            const workspace = await Workspace.findByPk(id);
+            const { workspace_id } = req.params;
+            const workspace = await Workspace.findByPk(workspace_id);
 
             if (!workspace) {
                 return res.status(404).json({ message: "workspace not found" });
@@ -78,10 +77,10 @@ class WorkspaceController {
     //UPDATE workspace
     static async updateWorkspace(req, res) {
         try {
-            const { id } = req.params;
+            const { workspace_id } = req.params;
             const { name } = req.body;
 
-            const workspace = await Workspace.findByPk(id);
+            const workspace = await Workspace.findByPk(workspace_id);
 
             if (!workspace) {
                 return res.status(404).json({ message: "Workspace not found" });
@@ -102,9 +101,9 @@ class WorkspaceController {
     //DELETE workspace 
     static async deleteWorkspace(req, res) {
         try {
-            const { id } = req.params;
+            const { workspace_id } = req.params;
 
-            const workspace = await Workspace.findByPk(id);
+            const workspace = await Workspace.findByPk(workspace_id);
 
             if (!workspace) {
                 return res.status(404).json({ message: "Workspace not found" });
