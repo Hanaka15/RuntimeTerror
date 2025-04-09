@@ -24,7 +24,6 @@ app.use("/auth", require("./routes/auth.routes"));
 app.use("/workspace", require("./routes/workspace.routes"));
 app.use("/study", require("./routes/study.routes"));
 app.use("/question", require("./routes/question.routes"));
-app.use("/answer", require ("./routes/answer.routes"));
 
 
 // Start Server
