@@ -5,12 +5,13 @@ class StudyController {
     //CREATE study
     static async createStudy(req, res) {
         try {
-            const { studyname, workspaceId, studyId } = req.body;
+            const { workspace_id } = req.params;
+            const { studyname, studyId } = req.body;
 
             const study = new Study({
                 id: studyId,
                 studyname,
-                workspaceId
+                workspaceId: workspace_id
             });
 
             await study.save();
@@ -25,7 +26,8 @@ class StudyController {
     //READ all studies
     static async getAllStudies(req, res) {
         try {
-            const studies = await Study.findAll();
+            const { workspace_id } = req.params;
+            const studies = await Study.findAll({ where: {workspaceId: workspace_id} });
             res.status(200).json(studies);
         } catch (error) {
             console.error("Error fetching studies:", error);
@@ -36,8 +38,8 @@ class StudyController {
     //READ single study
     static async getStudyById(req, res) {
         try {
-            const { id } = req.params;
-            const study = await Study.findByPk(id);
+            const { workspace_id, study_id } = req.params;
+            const study = await Study.findOne({ where: { id: study_id, workspaceId: workspace_id }});
 
             if (!study) {
                 return res.status(404).json({ message: "Study not found" });
@@ -52,10 +54,10 @@ class StudyController {
     //UPDATE study
     static async updateStudy(req, res) {
         try {
-            const { id } = req.params;
+            const { workspace_id, study_id } = req.params;
             const { studyname } = req.body;
 
-            const study = await Study.findByPk(id);
+            const study = await Study.findOne({ where: { id: study_id, workspaceId: workspace_id } })
 
             if (!study) {
                 return res.status(404).json({ message: "Study not found" });
@@ -76,8 +78,8 @@ class StudyController {
     //DELETE study 
     static async deleteStudy(req, res) {
         try {
-            const { id } = req.params;
-            const study = await Study.findByPk(id);
+            const { workspace_id, study_id } = req.params;
+            const study = await Study.findOne({ where: {id: study_id, workspaceId: workspace_id}});
 
             if (!study) {
                 return res.status(404).json({ message: "Study not found" });
