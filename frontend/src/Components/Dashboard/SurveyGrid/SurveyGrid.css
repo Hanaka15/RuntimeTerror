@@ -1,0 +1,43 @@
+.survey-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+  align-content: start;
+  padding: 0.5rem 0 0 0;
+}
+
+.survey-card {
+  background-color: #2c2c2c;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  aspect-ratio: 16/9;
+}
+.survey-card:hover {
+  transform: translateY(-5px);
+  border: 1px solid #6366f1;
+}
+.survey-card .survey-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #fff;
+}
+.survey-card .survey-description {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  flex: 1;
+  overflow: hidden;
+}
+.survey-card .survey-stats {
+  margin-top: auto;
+  display: flex;
+  gap: 1rem;
+  color: #6366f1;
+  font-size: 0.875rem;
+}/*# sourceMappingURL=SurveyGrid.css.map */

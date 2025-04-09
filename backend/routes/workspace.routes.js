@@ -4,9 +4,17 @@ const { authenticateToken } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-router.post("/create", authenticateToken, WorkspaceController.createWorkspace);
-router.patch("/create", authenticateToken, WorkspaceController.createWorkspace);
-router.get("/create", authenticateToken, WorkspaceController.createWorkspace);
-router.delete("/create", authenticateToken, WorkspaceController.createWorkspace);
+// Create
+router.post("/", authenticateToken, WorkspaceController.createWorkspace);
+
+// Read
+router.get("/", authenticateToken, WorkspaceController.getAllWorkspaces);
+router.get("/:workspace_id", authenticateToken, WorkspaceController.getWorkspaceById);
+
+// Update
+router.patch("/:workspace_id", authenticateToken, WorkspaceController.updateWorkspace);
+
+// Delete 
+router.delete("/:workspace_id", authenticateToken, WorkspaceController.deleteWorkspace);
 
 module.exports = router;

@@ -1,7 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
     const Study = sequelize.define("Study", {
       id: { type: DataTypes.STRING, primaryKey: true, allowNull: false, defaultValue: () => require("../utils/snowflake").generate() },
-      workspaceId: { type: DataTypes.STRING, allowNull: false }
+      workspaceId: { type: DataTypes.STRING, allowNull: false },
+      studyname: { type: DataTypes.STRING, allowNull: false }
     });
   
     Study.associate = (models) => {

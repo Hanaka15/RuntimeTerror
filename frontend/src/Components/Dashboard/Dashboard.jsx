@@ -1,15 +1,26 @@
 // src/Components/Dashboard/Dashboard.jsx
 import React from 'react';
-import Navigation from './Navigation';
-import './Dashboard.css';
+import Navigation from './Navigation/Navigation';
+import TopBar from './topBar/topBar';
+import SurveyGrid from './SurveyGrid/SurveyGrid';
+import './Dashboard.scss';
+import './topBar/topBar.css';
 
 const Dashboard = () => {
     return (
         <>
         <div className="parent">
-            <div className="div1"><div className="panel"></div></div>
+            <main className="div1">
+                <div className="panel">
+                    <SurveyGrid />
+                </div>
+            </main>
             <nav><Navigation /></nav>
-            <div className="div3"><div className="panel"></div></div>
+            <div className="Topbar">
+                <div className="panel">
+                    <header><TopBar /></header>
+                </div>
+            </div>
         </div> 
         </>
     );

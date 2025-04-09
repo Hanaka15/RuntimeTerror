@@ -21,7 +21,16 @@ app.use((err, req, res, next) => {
 
 // Routes
 app.use("/auth", require("./routes/auth.routes"));
-app.use("/workspace", require("./routes/workspace.routes"));
+
+//workspace
+app.use("/workspaces", require("./routes/workspace.routes"));
+
+//study
+app.use("/", require("./routes/study.routes"));
+
+//questions
+app.use("/", require("./routes/question.routes"));
+
 
 // Start Server
 app.listen(3000, () => console.log("Server running on port 3000"));
