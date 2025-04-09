@@ -35,8 +35,8 @@ const SurveyGrid = () => {
             status: "Closed"
         },
         {
-            title: "Super duper quiz",
-            description: "Test your mega skillz",
+            title: "Super quiz",
+            description: "Test your skillz",
             Completions: "69",
             status: "Active"
         },

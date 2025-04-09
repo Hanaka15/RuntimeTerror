@@ -19,6 +19,7 @@ const Login = () => {
                     <button type='submit' className='login__button'>Sign In</button>
                     <div className='login__footer'>
                        {/* <a href='#' className='login__link'>Forgot Password?</a> */}
+                       <p className='login__text'>Are you a new user? </p>
                         <a href='./register' className='login__link'>Create Account</a>
                     </div>
                 </form>

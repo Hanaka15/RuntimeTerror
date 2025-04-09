@@ -1,6 +1,6 @@
 import React from 'react';
 import './topBar.scss';
-// Import the image directly
+//Import image directly FOR NOW (CHANGE LATER)
 import profileImage from '../images/Juden.jpg';
 
 const TopBar = () => {

@@ -8,11 +8,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(26, 26, 26, 0.9098039216);
+  background-color: #242424;
   padding: 20px;
 }
 .register__container {
-  background-color: #242424;
+  background-color: #1c1c1c;
   padding: 40px;
   border-radius: 16px;
   width: 100%;
