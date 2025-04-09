@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   
     Question.associate = (models) => {
-      Question.belongsTo(models.Study, { foreignKey: "quizId", onDelete: "CASCADE", as: "quiz" });
+      Question.belongsTo(models.Study, { foreignKey: "studyId", onDelete: "CASCADE", as: "quiz" });
       Question.hasMany(models.Stimulus, { foreignKey: "questionId", as: "stimuli" });
       Question.hasMany(models.Answer, { foreignKey: "questionId", as: "answers" });
     };

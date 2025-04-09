@@ -4,9 +4,18 @@ const { authenticateToken } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-router.post("/create/study", authenticateToken, StudyController.createStudy);
-router.get("/create/study", authenticateToken, StudyController.createStudy);
-router.patch("/create/study", authenticateToken, StudyController.createStudy);
-router.delete("/create/study", authenticateToken, StudyController.createStudy);
+//create
+router.post("/", authenticateToken, StudyController.createStudy);
+
+//read
+router.get("/", authenticateToken, StudyController.getAllStudies);
+router.get("/:id", authenticateToken, StudyController.getStudyById);
+
+//update
+router.patch("/:id", authenticateToken, StudyController.updateStudy);
+
+//delete
+router.delete("/:id", authenticateToken, StudyController.deleteStudy);
+
 
 module.exports = router;
