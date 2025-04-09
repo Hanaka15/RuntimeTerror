@@ -35,14 +35,15 @@ class AuthController {
   }
 
   static async login(req, res) {
-    console.log("auth controller")
-    const { name, password } = req.body;
+    const { email, password } = req.body;
 
     try {
-      const user = await Researcher.findOne({ where: { name } });
+      const user = await Researcher.findOne({ where: { email } });
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
+
+      console.log(user)
 
       // Generate JWT tokens
       const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -72,7 +73,7 @@ class AuthController {
 
       // Save the refresh token in the database
       await Token.create({
-        userId: user.id,
+        researcherId: user.id,
         token: refreshToken,
         expire: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // Expire in 30 days
       });

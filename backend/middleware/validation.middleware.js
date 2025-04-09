@@ -17,8 +17,10 @@ class Validator {
   // You can define specific validation rules here
   static validateRegister() {
     return Validator.validate([
-      body('username').notEmpty().withMessage('Username is required'),
+      body('username').trim().notEmpty().withMessage('Username is required'),
+      body('email').trim().notEmpty().isEmail(),
       body('password')
+        .trim()
         .notEmpty().withMessage('Password is required')
         .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
         .matches(/\d/).withMessage('Password must contain a number')
@@ -28,8 +30,8 @@ class Validator {
 
   static validateLogin() {
     return Validator.validate([
-      body('name').notEmpty().withMessage('Username is required'),
-      body('password').notEmpty().withMessage('Password is required')
+      body('email').trim().notEmpty().isEmail().withMessage('Email is required'),
+      body('password').trim().notEmpty().withMessage('Password is required')
     ]);
   }
 
