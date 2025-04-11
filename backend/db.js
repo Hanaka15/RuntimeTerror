@@ -12,5 +12,5 @@ sequelize
   .authenticate()
   .then(() => console.log("PostgreSQL Connected"))
   .catch((err) => console.log("Error connecting to PostgreSQL:", err));
-  
+
 module.exports = sequelize;

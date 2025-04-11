@@ -2,19 +2,16 @@ const { Study } = require("../models");
 
 class StudyController {
 
-    //CREATE study
     static async createStudy(req, res) {
         try {
             const { workspace_id } = req.params;
             const { studyname, studyId } = req.body;
 
-            const study = new Study({
+            const study = await Study.create({
                 id: studyId,
                 studyname,
                 workspaceId: workspace_id
             });
-
-            await study.save();
 
             res.status(201).json({ message: "Study created successfully", study });
         } catch (error) {
@@ -23,7 +20,6 @@ class StudyController {
         }
     }
 
-    //READ all studies
     static async getAllStudies(req, res) {
         try {
             const { workspace_id } = req.params;
@@ -35,7 +31,6 @@ class StudyController {
         }
     }
 
-    //READ single study
     static async getStudyById(req, res) {
         try {
             const { workspace_id, study_id } = req.params;
@@ -51,7 +46,6 @@ class StudyController {
         }
     }
 
-    //UPDATE study
     static async updateStudy(req, res) {
         try {
             const { workspace_id, study_id } = req.params;
@@ -75,7 +69,6 @@ class StudyController {
         }
     }
 
-    //DELETE study 
     static async deleteStudy(req, res) {
         try {
             const { workspace_id, study_id } = req.params;

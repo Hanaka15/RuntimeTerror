@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     id: { type: DataTypes.STRING, primaryKey: true, allowNull: false, defaultValue: () => generate() },
     username: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
+    avatar: { type: DataTypes.STRING, allowNull: false },
     password: { type: DataTypes.STRING, allowNull: false },
   });
 

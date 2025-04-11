@@ -1,58 +1,66 @@
 const jwt = require("jsonwebtoken");
 
-const authenticateToken = async (req, res, next) => {
-    console.log(req.body)
-    try {
-        const authHeader = req.headers.authorization;
-        
-        if (!authHeader) {
-            return res.status(401).json({ 
-                error: 'AUTH_ERROR',
-                message: "Authorization header is missing" 
+class AuthMiddleware {
+    // Method to authenticate the access token
+    static authenticateAccessToken(req, res, next) {
+        const accessToken = req.cookies.accessToken; // Get access token from cookies
+
+        if (!accessToken) {
+            return res.status(401).json({
+                error: "AUTH_ERROR",
+                message: "Authorization token is missing",
             });
         }
 
-        if (!authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({ 
-                error: 'AUTH_ERROR',
-                message: "Invalid authorization format. Use 'Bearer <token>'" 
+        try {
+            const user = jwt.verify(accessToken, process.env.JWT_SECRET);
+            req.user = user;
+            next();
+        } catch (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).json({
+                    error: "TOKEN_EXPIRED",
+                    message: "Access token has expired",
+                });
+            }
+
+            if (err.name === "JsonWebTokenError") {
+                return res.status(403).json({
+                    error: "INVALID_TOKEN",
+                    message: "Invalid access token",
+                });
+            }
+
+            console.error("Access token error:", err);
+            return res.status(500).json({
+                error: "SERVER_ERROR",
+                message: "An error occurred during authentication",
             });
         }
-
-        const token = authHeader.split(" ")[1];
-
-        if (!token || typeof token !== 'string') {
-            return res.status(401).json({ 
-                error: 'AUTH_ERROR',
-                message: "Invalid token format" 
-            });
-        }
-
-        const user = await jwt.verify(token, process.env.JWT_SECRET);
-        
-        req.user = user;
-        next();
-    } catch (err) {
-        if (err.name === 'TokenExpiredError') {
-            return res.status(401).json({ 
-                error: 'TOKEN_EXPIRED',
-                message: "Authentication token has expired" 
-            });
-        }
-        
-        if (err.name === 'JsonWebTokenError') {
-            return res.status(403).json({ 
-                error: 'INVALID_TOKEN',
-                message: "Invalid authentication token" 
-            });
-        }
-
-        console.error('Authentication error:', err);
-        return res.status(500).json({ 
-            error: 'SERVER_ERROR',
-            message: "An unexpected error occurred during authentication" 
-        });
     }
-};
 
-module.exports = { authenticateToken };
+    static async authenticateRefreshToken(req, res, next) {
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(401).json({
+                error: "TOKEN_ERROR",
+                message: "Refresh token is missing",
+            });
+        }
+
+        try {
+            jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+            next(); 
+        } catch (err) {
+            console.error("Refresh token error:", err);
+            return res.status(401).json({
+                error: "TOKEN_EXPIRED",
+                message: "Refresh token expired or invalid",
+            });
+        }
+    }
+}
+
+module.exports = AuthMiddleware;

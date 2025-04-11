@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { Researcher, Token }  = require("../models");
+const { Researcher, Token } = require("../models");
 
 class AuthController {
   static async register(req, res) {
@@ -20,11 +20,12 @@ class AuthController {
       const newResearcher = await Researcher.create({
         username,
         password: HashedPassword,
+        avatar: `https://api.dicebear.com/9.x/big-ears-neutral/svg?seed=${username}&scale=100`,
         email
       });
 
-      res.status(201).json({ 
-        message: "Researcher registered successfully", 
+      res.status(201).json({
+        message: "Researcher registered successfully",
         username: newResearcher.username,
         email: newResearcher.email
       });
@@ -43,12 +44,14 @@ class AuthController {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      console.log(user)
+      console.log(user.username)
 
       // Generate JWT tokens
-      const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "15m",
-      });
+      const accessToken = jwt.sign(
+        { id: user.id },
+        process.env.JWT_SECRET,
+        { expiresIn: "15m" }
+      );
 
       const refreshToken = jwt.sign(
         { id: user.id },
@@ -64,21 +67,45 @@ class AuthController {
         maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
       });
 
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 1000 * 60 * 10, // 15 min
-      });
-
-      // Save the refresh token in the database
       await Token.create({
         researcherId: user.id,
         token: refreshToken,
-        expire: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // Expire in 30 days
+        expire: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days
       });
 
-      res.json({ message: "Logged in", accessToken, refreshToken });
+      const userResponse = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        avatar: user.avatar,
+        accessToken: accessToken
+      }
+
+      res.json({ ...userResponse }).status(200);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error", error });
+    }
+  }
+
+  static async getUser(req, res) {
+    try {
+      const id = req.user.id
+      const user = await Researcher.findOne({ where: { id } });
+      if (!user) {
+        return res.status(401).json({ message: "user not found" });
+      }
+
+      console.log("GET /me " + user.username)
+
+      const userResponse = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        avatar: user.avatar,
+      }
+
+      res.json({ user: userResponse }).status(200);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server error", error });
@@ -90,13 +117,13 @@ class AuthController {
 
     try {
       if (refreshToken) {
-        // Delete the refresh token from the database
         await Token.destroy({
           where: { token: refreshToken },
         });
       }
 
       res.clearCookie("refreshToken");
+      res.clearCookie("accessToken")
       res.json({ message: "Logged out" });
     } catch (error) {
       console.error(error);

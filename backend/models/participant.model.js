@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
       id: { type: DataTypes.STRING, primaryKey: true, allowNull: false, defaultValue: () => require("../utils/snowflake").generate() },
       age: { type: DataTypes.INTEGER, allowNull: true },
       gender: { type: DataTypes.ENUM("male", "female", "non-binary", "other", "prefer not to say"), allowNull: true },
-      educationLevel: { type: DataTypes.ENUM("high school", "bachelor", "master", "phd", "other"), allowNull: true }
+      educationLevel: { type: DataTypes.STRING, allowNull: true }
     });
   
     Participant.associate = (models) => {
@@ -12,4 +12,3 @@ module.exports = (sequelize, DataTypes) => {
   
     return Participant;
   };
-  

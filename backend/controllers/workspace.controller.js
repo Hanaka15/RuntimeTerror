@@ -1,37 +1,11 @@
 const { Workspace } = require("../models");
 
-/* class WorkspaceController {
-    static async createWorkspace(req, res) {
-        try {
-            const { name } = req.body;
-            const userId = req.user.id;
-
-            const workspace = new Workspace({
-                name,
-                owner: userId
-            });
-
-            await workspace.save();
-
-            res.status(201).json({ message: "Workspace created successfully", workspace });
-        } catch (error) {
-            console.error("Workspace Creation Error:", error);
-            res.status(500).json({ message: "Server error", error: error.message });
-        }
-    }
-} */
-
 class WorkspaceController {
 
-    //CREATE workspace
     static async createWorkspace(req, res) {
-        // if (hasthispermission || hasanother) { 
-        //     /*let them do this*/ 
-        // }
-
         try {
             const { name } = req.body;
-            const researcherId = "7308174646442987520";
+            const researcherId = req.user.id;
 
             const workspace = new Workspace({
                 name,
@@ -47,10 +21,10 @@ class WorkspaceController {
         }
     }
 
-    //READ all workspaces
     static async getAllWorkspaces(req, res) {
         try {
-            const workspaces = await Workspace.findAll();
+            const researcherId = req.user.id;
+            const workspaces = await Workspace.findAll({where: {ownerId: researcherId}});
             res.status(200).json(workspaces);
         } catch (error) {
             console.error("Error fetching workspaces:", error);
@@ -58,7 +32,6 @@ class WorkspaceController {
         }
     }
 
-    //READ single workspace
     static async getWorkspaceById(req, res) {
         try {
             const { workspace_id } = req.params;
@@ -74,7 +47,6 @@ class WorkspaceController {
         }
     }
 
-    //UPDATE workspace
     static async updateWorkspace(req, res) {
         try {
             const { workspace_id } = req.params;
@@ -98,7 +70,6 @@ class WorkspaceController {
         }
     }
 
-    //DELETE workspace 
     static async deleteWorkspace(req, res) {
         try {
             const { workspace_id } = req.params;
