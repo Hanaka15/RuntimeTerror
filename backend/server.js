@@ -1,41 +1,59 @@
-require("dotenv").config();
-const cors = require('cors');
+require('dotenv').config();
 const express = require("express");
-const passport = require("passport");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const cookieParser = require("cookie-parser");
-const { sequelize } = require("./models")
+const passport = require("passport");
+const cors = require("cors");
+
+// Load custom configs
+const connectDB = require("./config/db");
+require("./config/passport"); // Passport config
 
 const app = express();
 
-sequelize.sync({ alter: true })
-  .then(() => {
-    console.log('sync successfull');
-  })
-  .catch((error) => {
-    console.error('Error syncing database:', error);
-  });
+// === Connect to DB ===
+connectDB();
 
-// Middleware
-
+// === Middleware ===
+app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: "http://localhost:5173",
   credentials: true,
 }));
 
-app.use(express.json());
-app.use(cookieParser());
-app.use(passport.initialize());
+// === Session Configuration ===
+app.use(session({
+  name: 'sessionId',
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    ttl: 60 * 60 * 24 * 7, // 7 days
+  }),
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  }
+}));
 
-// Global error handler
+// === Passport ===
+app.use(passport.initialize());
+app.use(passport.session());
+
+// === Routes ===
+app.use("/auth", require("./routes/auth.routes"));
+
+// === Global Error Handler ===
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ message: 'Something went wrong!' });
+  console.error("❌ Error:", err);
+  res.status(500).json({ message: "Something went wrong!" });
 });
 
-// Routes
-app.use("/auth", require("./routes/auth.routes"));
-app.use("/workspaces", require("./routes/workspace.routes"));
-app.use("/", require("./routes/study.routes"));
-app.use("/", require("./routes/question.routes"));
-
-app.listen(3000, () => console.log("Server running on port 3000"));
+// === Start Server ===
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

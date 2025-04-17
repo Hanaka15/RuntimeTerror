@@ -1,166 +1,115 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const { Researcher, Token } = require("../models");
+const passport = require('passport');
+const Researcher = require('../models/researcher.model');
+const bcrypt = require('bcryptjs');
 
 class AuthController {
+  /**
+   * @route POST /auth/register
+   */
   static async register(req, res) {
-    const { username, password, email } = req.body;
+    const { username, email, password } = req.body;
 
     try {
-      const existingResearcher = await Researcher.findOne({
-        where: { email }
-      });
-
+      // Check if researcher already exists
+      const existingResearcher = await Researcher.findOne({ email });
       if (existingResearcher) {
-        return res.status(400).json({ message: "Researcher already exists" });
+        return res.status(400).json({ error: "Email is already taken. Please use a different email." });
       }
 
-      // Hash password and create a new user
-      const HashedPassword = await bcrypt.hash(password, 10);
-      const newResearcher = await Researcher.create({
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create new researcher
+      const newResearcher = new Researcher({
         username,
-        password: HashedPassword,
-        avatar: `https://api.dicebear.com/9.x/big-ears-neutral/svg?seed=${username}&scale=100`,
-        email
+        email,
+        password: hashedPassword,
       });
 
-      res.status(201).json({
-        message: "Researcher registered successfully",
-        username: newResearcher.username,
-        email: newResearcher.email
+      await newResearcher.save();
+
+      return res.status(201).json({
+        message: "Registration successful! You can now log in.",
+        researcher: {
+          id: newResearcher._id,
+          username: newResearcher.username,
+          email: newResearcher.email,
+        },
       });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error", error });
+    } catch (err) {
+      console.error("Registration error:", err);
+      return res.status(500).json({ error: "An error occurred during registration. Please try again later." });
     }
   }
 
-  static async login(req, res) {
-    const { email, password } = req.body;
+  /**
+   * @route POST /auth/login
+   * Uses Passport Local Strategy
+   */
+  static login(req, res, next) {
+    passport.authenticate('local', (err, user, info) => {
+      if (err) return next(err);
+      if (!user) return res.status(401).json({ error: info.message || 'Login failed' });
 
-    try {
-      const user = await Researcher.findOne({ where: { email } });
-      if (!user || !(await bcrypt.compare(password, user.password))) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-
-      console.log(user.username)
-
-      // Generate JWT tokens
-      const accessToken = jwt.sign(
-        { id: user.id },
-        process.env.JWT_SECRET,
-        { expiresIn: "15m" }
-      );
-
-      const refreshToken = jwt.sign(
-        { id: user.id },
-        process.env.JWT_REFRESH_SECRET,
-        { expiresIn: "30d" }
-      );
-
-      // Set refresh token in cookies
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+      req.logIn(user, (err) => {
+        if (err) return next(err);
+        const { id, username, email } = user;
+        return res.json({ message: "Login successful", researcher: { id, username, email } });
       });
-
-      await Token.create({
-        researcherId: user.id,
-        token: refreshToken,
-        expire: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days
-      });
-
-      const userResponse = {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        avatar: user.avatar,
-        accessToken: accessToken
-      }
-
-      res.json({ ...userResponse }).status(200);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error", error });
-    }
+    })(req, res, next);
   }
 
+  /**
+   * @route POST /auth/logout
+   */
+  static logout(req, res, next) {
+    req.logout((err) => {
+      if (err) return next(err);
+      res.json({ message: 'Logged out successfully' });
+    });
+  }
+
+  /**
+   * @route GET /auth/google
+   */
+  static googleAuth = passport.authenticate('google', { scope: ['profile', 'email'] });
+
+  /**
+   * @route GET /auth/google/callback
+   */
+  static googleCallback(req, res, next) {
+    passport.authenticate('google', (err, user, info) => {
+      if (err) return next(err);
+      if (!user) return res.redirect('/auth/login-failed');
+
+      req.logIn(user, (err) => {
+        if (err) return next(err);
+        return res.redirect('/user/me');
+      });
+    })(req, res, next);
+  }
+
+  /**
+   * @route GET /auth/login-failed
+   */
+  static loginFailed(req, res) {
+    res.status(401).json({ error: 'Login failed' });
+  }
+
+  /**
+   * @route GET /user/me
+   */
   static async getUser(req, res) {
     try {
-      const id = req.user.id
-      const user = await Researcher.findOne({ where: { id } });
-      if (!user) {
-        return res.status(401).json({ message: "user not found" });
-      }
+      if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
 
-      console.log("GET /me " + user.username)
+      const researcher = await Researcher.findById(req.user.id).select('-password');
+      if (!researcher) return res.status(404).json({ error: 'User not found' });
 
-      const userResponse = {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        avatar: user.avatar,
-      }
-
-      res.json({ user: userResponse }).status(200);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error", error });
-    }
-  }
-
-  static async logout(req, res) {
-    const refreshToken = req.cookies.refreshToken;
-
-    try {
-      if (refreshToken) {
-        await Token.destroy({
-          where: { token: refreshToken },
-        });
-      }
-
-      res.clearCookie("refreshToken");
-      res.clearCookie("accessToken")
-      res.json({ message: "Logged out" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error", error });
-    }
-  }
-
-  static async refreshToken(req, res) {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    try {
-      const tokenRecord = await Token.findOne({
-        where: { token: refreshToken },
-      });
-
-      if (!tokenRecord) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
-        if (err)
-          return res.status(403).json({ message: "Invalid refresh token" });
-
-        const accessToken = jwt.sign(
-          { id: user.id },
-          process.env.JWT_SECRET,
-          { expiresIn: "15m" }
-        );
-
-        res.json({ accessToken });
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error", error });
+      res.json({ researcher }).status(200);
+    } catch (err) {
+      console.error("Fetch logged-in user error:", err);
+      res.status(500).json({ error: 'Failed to retrieve user information' });
     }
   }
 }

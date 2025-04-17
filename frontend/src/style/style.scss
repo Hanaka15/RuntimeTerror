@@ -1,0 +1,70 @@
+@import './variables';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+}
+
+body, html, #app {
+    background-color: $background-secondary;
+    min-height: 100vh;
+    min-width: 100vw;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    padding: 20px;
+    background-color: $background;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    max-width: 30rem;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+
+    input {
+        padding: .75rem .5rem;
+        width: 100%;
+        color: #000;
+        font-size: 1rem;
+        border-radius: .5rem;
+        outline: none;
+        border: none;
+    }
+
+    button {
+        padding: .75rem 1rem;
+        width: 100%;
+        background-color: $primary;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 0 0 1rem 0;
+        font-size: 1rem;
+        border-radius: .5rem;
+    }
+
+    form {
+        margin: 1rem 0 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+    }
+}
+
+.primary {
+    color: $primary;
+}

@@ -1,14 +1,17 @@
-module.exports = (sequelize, DataTypes) => {
-    const Participant = sequelize.define("Participant", {
-      id: { type: DataTypes.STRING, primaryKey: true, allowNull: false, defaultValue: () => require("../utils/snowflake").generate() },
-      age: { type: DataTypes.INTEGER, allowNull: true },
-      gender: { type: DataTypes.ENUM("male", "female", "non-binary", "other", "prefer not to say"), allowNull: true },
-      educationLevel: { type: DataTypes.STRING, allowNull: true }
-    });
-  
-    Participant.associate = (models) => {
-      Participant.hasMany(models.Answer, { foreignKey: "participantId", as: "answers" });
-    };
-  
-    return Participant;
-  };
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+const AnswerSchema = new Schema({
+  questionId: { type: String, required: true },
+  response: { type: Object, required: true }
+});
+
+const ParticipantSchema = new Schema({
+  studyId: { type: String, required: true },
+  participantId: { type: String, required: true },
+  demographics: { type: Object, required: true },
+  answers: [AnswerSchema]
+});
+
+module.exports = mongoose.model('Participant', ParticipantSchema);
+

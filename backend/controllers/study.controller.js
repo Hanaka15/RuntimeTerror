@@ -1,88 +1,96 @@
-const { Study } = require("../models");
+const Study = require("../models/study.model");
+const StudyResearcher = require("../models/study-researcher.model");
+
+const sendErrorResponse = (res, status, message, error) => {
+    console.error(message, error);
+    res.status(status).json({ message, error: error.message });
+};
 
 class StudyController {
 
+    static async findStudyById(studyId) {
+        const study = await Study.findOne({ id: studyId });
+        if (!study) {
+            throw new Error("Study not found");
+        }
+        return study;
+    }
+
     static async createStudy(req, res) {
         try {
-            const { workspace_id } = req.params;
-            const { studyname, studyId } = req.body;
+            const { studyname, questions } = req.body;
 
-            const study = await Study.create({
-                id: studyId,
+            const newStudy = await Study.create({
                 studyname,
-                workspaceId: workspace_id
+                ownerId: req.user.id,
+                questions,
             });
 
-            res.status(201).json({ message: "Study created successfully", study });
+            res.status(201).json({ message: "Study created successfully", study: newStudy });
         } catch (error) {
-            console.error("Study Creation Error: ", error);
-            res.status(500).json({ message: "Server error", error: error.message });
+            sendErrorResponse(res, 500, "Study Creation Error:", error);
         }
     }
 
     static async getAllStudies(req, res) {
         try {
-            const { workspace_id } = req.params;
-            const studies = await Study.findAll({ where: {workspaceId: workspace_id} });
+            const researcherId = req.user.id;
+    
+            const studyIds = await StudyResearcher.distinct("studyId", { researcherId });
+            const studies = await Study.find({
+                $or: [
+                    { ownerId: researcherId },
+                    { id: { $in: studyIds } }
+                ]
+            }).select("-questions");    
+    
             res.status(200).json(studies);
         } catch (error) {
-            console.error("Error fetching studies:", error);
-            res.status(500).json({ message: "Server error", error: error.message });
+            sendErrorResponse(res, 500, "Error fetching studies:", error);
         }
     }
 
     static async getStudyById(req, res) {
         try {
-            const { workspace_id, study_id } = req.params;
-            const study = await Study.findOne({ where: { id: study_id, workspaceId: workspace_id }});
+            const { study_id } = req.params;
+            const study = await this.findStudyById(study_id);
 
-            if (!study) {
-                return res.status(404).json({ message: "Study not found" });
-            }
             res.status(200).json(study);
         } catch (error) {
-            console.error("Error fetching study:", error);
-            res.status(500).json({ message: "Server error", error: error.message });
+            sendErrorResponse(res, error.message === "Study not found" ? 404 : 500, error.message, error);
         }
     }
 
     static async updateStudy(req, res) {
         try {
-            const { workspace_id, study_id } = req.params;
-            const { studyname } = req.body;
+            const { study_id } = req.params;
+            const study = await this.findStudyById(study_id);
 
-            const study = await Study.findOne({ where: { id: study_id, workspaceId: workspace_id } })
-
-            if (!study) {
-                return res.status(404).json({ message: "Study not found" });
-            }
-
-            if (studyname) {
-                study.studyname = studyname;
-            }
+            // Update entire study fields
+            const { studyname, questions } = req.body;
+            if (studyname) study.studyname = studyname;
+            if (questions) study.questions = questions;
 
             await study.save();
             res.status(200).json({ message: "Study updated successfully", study });
         } catch (error) {
-            console.error("study update error:", error);
-            res.status(500).json({ message: "Server error", error: error.message });
+            sendErrorResponse(res, 500, "Study update error:", error);
         }
     }
 
     static async deleteStudy(req, res) {
         try {
-            const { workspace_id, study_id } = req.params;
-            const study = await Study.findOne({ where: {id: study_id, workspaceId: workspace_id}});
+            const { study_id } = req.params;
+            const study = await this.findStudyById(study_id);
 
-            if (!study) {
-                return res.status(404).json({ message: "Study not found" });
+            if (study.ownerId !== req.user.id) {
+                return res.status(403).json({ message: "You are not the owner of this study" });
             }
 
-            await study.destroy();
+            await study.remove();
             res.status(200).json({ message: "Study deleted successfully" });
         } catch (error) {
-            console.error("Study delete error:", error);
-            res.status(500).json({ message: "Server error", error: error.message });
+            sendErrorResponse(res, error.message === "Study not found" ? 404 : 500, error.message, error);
         }
     }
 }

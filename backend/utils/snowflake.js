@@ -31,10 +31,26 @@ class Snowflake {
       BigInt(this.sequence)
     ).toString();
   }
+
+  toTimecode(id) {
+    return parseInt(id) / 1000 + this.epoch;
+  }
+
+  toBase64(id) {
+    return Buffer.from(id).toString('base64');
+  }
+
+  fromBase64(id) {
+    return parseInt(Buffer.from(id, 'base64').toString('ascii'));
+  }
 }
 
 const snowflake = new Snowflake();
 
 module.exports = {
-  generate: () => snowflake.generate()
+  generate: () => snowflake.generate(),
+  toTimecode: (id) => snowflake.toTimecode(id),
+  toBase64: (id) => snowflake.toBase64(id),
+  fromBase64: (id) => snowflake.fromBase64(id)
 };
+

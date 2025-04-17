@@ -1,13 +1,19 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const AuthController = require("../controllers/auth.controller");
-const Validator = require("../middleware/validation.middleware")
-const AuthMiddleware = require("../middleware/auth.middleware")
+const AuthController = require('../controllers/auth.controller');
+const AuthMiddleware = require('../middleware/auth.middleware');
 
-router.post("/register", Validator.validateRegister(), AuthController.register);
-router.post("/login",  Validator.validateLogin(), AuthController.login);
-router.post("/logout", AuthController.logout);
-router.post("/refresh", AuthMiddleware.authenticateRefreshToken, AuthController.refreshToken);
-router.get("/me", AuthMiddleware.authenticateAccessToken, AuthController.getUser);
+// Local
+router.post('/register', AuthController.register);
+router.post('/login', AuthController.login);
+router.post('/logout', AuthMiddleware.ensureAuth, AuthController.logout);
+router.get('/me', AuthMiddleware.ensureAuth, AuthController.getUser);
+
+// Google
+router.get('/google', AuthController.googleAuth);
+router.get('/google/callback', AuthController.googleCallback);
+
+// Failed
+router.get('/login-failed', AuthController.loginFailed);
 
 module.exports = router;

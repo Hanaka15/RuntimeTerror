@@ -14,8 +14,8 @@ class Validator {
     ];
   }
 
-  // You can define specific validation rules here
-  static validateRegister() {
+  // Add specific validation rules here
+  static validateSignup() {
     return Validator.validate([
       body('username').trim().notEmpty().withMessage('Username is required'),
       body('email').trim().notEmpty().isEmail(),
