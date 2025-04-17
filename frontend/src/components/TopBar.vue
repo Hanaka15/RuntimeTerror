@@ -15,11 +15,12 @@
 .topbar {
     grid-area: 1 / 2 / 2 / 3;
     padding: $gap;
+
   nav {
-    background-color: $background-secondary;
-    border-radius: .5rem;
     width: 100%;
     height: 100%;
+    background-color: $background-secondary;
+    border-radius: .5rem;
     
     .user {
       padding: .25rem .25rem .25rem .75rem;

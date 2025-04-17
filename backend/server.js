@@ -47,6 +47,7 @@ app.use(passport.session());
 
 // === Routes ===
 app.use("/auth", require("./routes/auth.routes"));
+app.use("/studies", require("./routes/study.routes"));
 
 // === Global Error Handler ===
 app.use((err, req, res, next) => {

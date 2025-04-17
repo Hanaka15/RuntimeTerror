@@ -61,7 +61,7 @@ export default {
 
 .dashboard-container {
   display: grid;
-  grid-template-columns: 20rem 1fr;
+  grid-template-columns: 15rem auto;
   grid-template-rows: auto 1fr;
   grid-column-gap: 0px;
   grid-row-gap: 0px; 
@@ -73,7 +73,6 @@ export default {
   grid-area: 2 / 2 / 3 / 3;
   padding: 0 $gap $gap $gap;  
   &-container {
-    background-color: $background-secondary;
     border-radius: .5rem;
     width: 100%;
     height: 100%;

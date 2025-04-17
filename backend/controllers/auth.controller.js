@@ -28,7 +28,7 @@ class AuthController {
 
       await newResearcher.save();
 
-      return res.status(201).json({
+      return res.status(200).json({
         message: "Registration successful! You can now log in.",
         researcher: {
           id: newResearcher._id,
@@ -54,7 +54,7 @@ class AuthController {
       req.logIn(user, (err) => {
         if (err) return next(err);
         const { id, username, email } = user;
-        return res.json({ message: "Login successful", researcher: { id, username, email } });
+        return res.status(200).json({ message: "Login successful", researcher: { id, username, email } });
       });
     })(req, res, next);
   }

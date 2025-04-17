@@ -9,7 +9,7 @@ import Dashboard from '../pages/Dashboard.vue';
 const routes = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
-  { path: '/dashboard', name: 'Dashboard', component: Dashboard, /*meta: { requiresAuth: true }*/ },
+  { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/:catchAll(.*)', redirect: '/login' },
 ];
 

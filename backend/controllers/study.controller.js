@@ -7,7 +7,6 @@ const sendErrorResponse = (res, status, message, error) => {
 };
 
 class StudyController {
-
     static async findStudyById(studyId) {
         const study = await Study.findOne({ id: studyId });
         if (!study) {
@@ -24,6 +23,8 @@ class StudyController {
                 studyname,
                 ownerId: req.user.id,
                 questions,
+                consent: req.body.consent,
+                demographics: req.body.demographics
             });
 
             res.status(201).json({ message: "Study created successfully", study: newStudy });
@@ -33,6 +34,7 @@ class StudyController {
     }
 
     static async getAllStudies(req, res) {
+        console.log(req.user);
         try {
             const researcherId = req.user.id;
     
@@ -42,7 +44,7 @@ class StudyController {
                     { ownerId: researcherId },
                     { id: { $in: studyIds } }
                 ]
-            }).select("-questions");    
+            }).select("-questions");
     
             res.status(200).json(studies);
         } catch (error) {
@@ -54,10 +56,19 @@ class StudyController {
         try {
             const { study_id } = req.params;
             const study = await this.findStudyById(study_id);
-
             res.status(200).json(study);
         } catch (error) {
             sendErrorResponse(res, error.message === "Study not found" ? 404 : 500, error.message, error);
+        }
+    }
+
+    static async getStudiesByParticipant(req, res) {
+        try {
+            const researcherId = req.user.id;
+            const studies = await Study.find({ ownerId: researcherId }).select("-questions");
+            res.status(200).json(studies);
+        } catch (error) {
+            sendErrorResponse(res, 500, "Error fetching studies:", error);
         }
     }
 

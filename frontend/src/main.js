@@ -5,7 +5,22 @@ import { createPinia } from 'pinia';
 import router from './router';
 import { useAuthStore } from './store/authStore';
 
+// Font Awesome imports
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faEye, faPenToSquare, faHouse, faUser} from '@fortawesome/free-solid-svg-icons';
+
+// Add icons to the library
+library.add(
+    faEye, 
+    faPenToSquare, 
+    faHouse,
+    faUser
+);
+
 const app = createApp(App);
+
+app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.use(createPinia());
 app.use(router);
