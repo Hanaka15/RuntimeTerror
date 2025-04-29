@@ -1,0 +1,22 @@
+@import 'variables';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+}
+
+body, html, #app {
+    min-height: 100vh;
+    min-width: 100vw;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

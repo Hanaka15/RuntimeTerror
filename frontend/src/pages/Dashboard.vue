@@ -6,6 +6,7 @@ import SideBar from "../components/SideBar.vue";
 // Import example subcomponents
 import DashboardHome from "../components/DashboardHome.vue";
 import ProfileSettings from "../components/ProfileSettings.vue";
+import CreateStudy from "../components/CreateStudy.vue";
 
 export default {
   components: {
@@ -13,6 +14,7 @@ export default {
     SideBar,
     DashboardHome,
     ProfileSettings,
+    CreateStudy,
   },
   data() {
     return {
@@ -46,19 +48,17 @@ export default {
 
 <template>
   <div class="dashboard-container">
-    <TopBar :user="user" />
+    <TopBar :user="user" @logout="logout" />
     <SideBar :user="user" @change-view="changeView" />
     <div class="content">
       <div class="content-container">
-        <component :is="currentView" />
+        <component :is="currentView" @change-view="changeView" />
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@import "../style/style.scss";
-
 .dashboard-container {
   display: grid;
   grid-template-columns: 15rem auto;
@@ -71,7 +71,7 @@ export default {
 
 .content {
   grid-area: 2 / 2 / 3 / 3;
-  padding: 0 $gap $gap $gap;  
+  padding: 0 var(--gap) var(--gap) var(--gap);  
   &-container {
     border-radius: .5rem;
     width: 100%;

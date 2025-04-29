@@ -1,6 +1,6 @@
 // src/stores/authStore.js
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import api from '@/api/axios';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -10,34 +10,26 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async fetchUser() {
       try {
-        const response = await axios.get('http://localhost:3000/auth/me', {
-          withCredentials: true,
-        });
+        const response = await api.get('/auth/me');
         this.user = response.data.researcher;
       } catch (error) {
         this.user = null;
-        throw error; // Important! Throw so router can handle it
+        throw error;
       }
     },
 
     async login(credentials) {
-      await axios.post('http://localhost:3000/auth/login', credentials, {
-        withCredentials: true,
-      });
+      await api.post('/auth/login', credentials);
       await this.fetchUser();
     },
 
     async register(userData) {
-      await axios.post('http://localhost:3000/auth/register', userData, {
-        withCredentials: true,
-      });
+      await api.post('/auth/register', userData);
       await this.fetchUser();
     },
 
     async logout() {
-      await axios.post('http://localhost:3000/auth/logout', {}, {
-        withCredentials: true,
-      });
+      await api.post('/auth/logout');
       this.user = null;
     },
   },

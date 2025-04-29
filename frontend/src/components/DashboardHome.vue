@@ -1,36 +1,52 @@
 <template>
   <div class="dashboard-home">
+    <div>
+      <button class="create-study" @click="$emit('changeView', 'CreateStudy')">
+        <font-awesome-icon :icon="['fas', 'plus']" />
+      </button>
+    </div>
     <div class="container">
       <h2>Surveys</h2>
-      <ul>
-        <li v-for="study in studies" :key="study.id">
-          <div class="left">
-            <div class="title">{{ study.title }}</div>
-            <div class="responses">{{ study.responses }}/{{ study.total }}</div>
-          </div>
-          <div class="right">
-            <div class="researchers">
-              <img
-                v-for="n in 3"
-                :key="n"
-                :src="`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${Math.random()
-                  .toString(36)
-                  .substring(7)}`"
-              />
-            </div>
-            <div>
-              <button>
+      <div class="empty" v-if="!studies.length">You don't have any studies</div>
+      <table v-else class="study-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Responses</th>
+            <th>Researchers</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(study, index) in studies" :key="study.id">
+            <td>{{ index + 1 }}</td>
+            <td class="title">{{ study.name }}</td>
+            <td>{{ study.responses || 0 }}/{{ study.total || 0 }}</td>
+            <td>
+              <div class="researchers">
+                <img
+                  v-for="n in 3"
+                  :key="n"
+                  :src="`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${Math.random().toString(36).substring(7)}`"
+                />
+              </div>
+            </td>
+            <td>
+              <button class="edit">
                 <font-awesome-icon :icon="['fas', 'pen-to-square']" />
               </button>
-            </div>
-          </div>
-        </li>
-      </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
 <script>
+import api from "@/api/axios";
+
 export default {
   name: "DashboardHome",
   data() {
@@ -40,11 +56,8 @@ export default {
   },
   async mounted() {
     try {
-      const response = await fetch("http://localhost:3000/studies", {
-        credentials: 'include',
-      });
-      const data = await response.json();
-      this.studies = data;
+      const response = await api.get("/studies");
+      this.studies = response.data;
     } catch (error) {
       console.error("Failed to fetch studies:", error);
     }
@@ -53,86 +66,85 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../style/style.scss";
-
 .container {
   padding: 1rem;
-  max-width: 800px;
+  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0 0 0;
-  width: 100%;
+.empty {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 1rem;
 }
 
-li {
+.study-table {
+  table-layout: auto;
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 0 0.5rem 0;
-  padding: 0.5rem 1rem;
-  background-color: $background-secondary;
+  margin-top: 1rem;
+  border-collapse: collapse;
+  background-color: var(--background-alt);
   border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 
-  & > * {
-    display: inline-block;
+  th,
+  td {  
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  thead {
+    background-color: var(--background-alt);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border-color);
+
+    &:hover {
+      background-color: var(--background-muted);
+    }
   }
 
   .title {
-    font-size: 1.125rem;
+    text-transform: capitalize;
+    font-size: 1.1rem;
   }
 
-  .right {
-    display: flex;
-    align-items: center;
-
-    .researchers {
-      background-color: #ffffff1d;
-      padding: 0.25rem 0.25rem 0.25rem 1.5rem;
-      border-radius: 3.25rem;
-      img {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 50%;
-        vertical-align: middle;
-        margin-left: -1.25rem;
-      }
-    }
-  }
-
-  .left {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    gap: 1rem;
-    .responses {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: $primary;
-    }
-  }
-
-  button {
-    background-color: #646cff;
-    border: none;
-    color: #fff;
-    min-height: 2.5rem;
-    min-width: 2.5rem;
-    font-size: 1.25rem;
-    border-radius: 0.25rem;
+  .edit {
+    padding: 0.5rem 1rem;
     cursor: pointer;
-    margin: 0 0 0 0.5rem;
-    outline: none;
-    border: 0;
-    &:hover {
-      background-color: #535bf2;
+  }
+
+  .researchers {
+    width: fit-content;
+    margin: 0 auto;
+    padding: 0 0 0 1rem;
+    img {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      margin-left: -1rem;
+      object-fit: cover;
+      transition: transform 0.2s, filter 0.2s;
+      z-index: 2;
     }
   }
+}
+
+.create-study {
+  background-color: var(--button-base);
+  font-size: 2rem;
+  line-height: 2rem;
+  padding: 1rem 1.125rem;
+  text-align: center;
+  border: none;
+  border-radius: 50%;
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  cursor: pointer;
 }
 </style>

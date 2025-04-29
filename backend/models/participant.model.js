@@ -7,10 +7,14 @@ const AnswerSchema = new Schema({
 });
 
 const ParticipantSchema = new Schema({
-  studyId: { type: String, required: true },
+  studyId: { type: Schema.Types.ObjectId, ref: 'Study', required: true },
   participantId: { type: String, required: true },
   demographics: { type: Object, required: true },
   answers: [AnswerSchema]
+});
+
+ParticipantSchema.virtual('answerCount').get(async function() {
+  return this.answers.length
 });
 
 module.exports = mongoose.model('Participant', ParticipantSchema);

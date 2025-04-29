@@ -19,8 +19,6 @@
   </script>
   
   <style lang="scss" scoped>
-  @import '../style/style.scss';
-  
   .logo {
     width: 80%;
     margin: 1rem 0 1.5rem 0;
@@ -28,13 +26,13 @@
 
   .sidebar {
     grid-area: 1 / 1 / 3 / 2;
-    padding: $gap 0 $gap $gap;
+    padding: var(--gap) 0 var(--gap) var(--gap);
   
     &-title {
       text-align: center;
     }
     &-content {
-      background-color: $background-secondary;
+      background-color: var(--background-alt);
       border-radius: 0.5rem;
       width: 100%;
       height: 100%;

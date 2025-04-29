@@ -1,24 +1,41 @@
-const mongoose = require('mongoose');
+// models/study.model.js
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const BaseQuestionSchema = require('./question.model');
 
-// Initialize the Study Schema
+const BaseQuestionSchema = new Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+      enum: ["multiple_choice", "rank", "preference", "slider"],
+    },
+    question: { type: String, required: true },
+  },
+  { discriminatorKey: "type" }
+);
+
 const StudySchema = new Schema({
   ownerId: { type: String, required: true },
-  studyname: { type: String, required: true },
-  demographics: { type: Object },
+  name: { type: String, required: true },
   consent: { type: String, required: true, maxlength: 4000 },
+  demographics: { type: Object },
   published: { type: Boolean, default: false },
-  questions: [BaseQuestionSchema]
+  questions: [BaseQuestionSchema],
+  collaborators: [
+    {
+      researcher: { type: Schema.Types.ObjectId, ref: 'Researcher', required: true },
+      role: { type: String, enum: ['viewer', 'editor'], default: 'viewer' },
+    }
+  ]
 });
 
-// Create Study model
-const Study = mongoose.model('Study', StudySchema);
+const Study = mongoose.model("Study", StudySchema);
 
-require('./questions/multiple-choice')(Study);
-require('./questions/rank')(Study);
-require('./questions/prefrence')(Study);
-require('./questions/slider')(Study);
+const Question = StudySchema.path("questions").schema;
+
+require("./questions/multiple-choice")(Question);
+require("./questions/rank")(Question);
+require("./questions/preference")(Question);
+require("./questions/slider")(Question);
 
 module.exports = Study;
-

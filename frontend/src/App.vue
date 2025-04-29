@@ -9,6 +9,6 @@ export default {
 };
 </script>
 
-<style>
-  @import './style/style.scss';
+<style lang="scss">
+
 </style>

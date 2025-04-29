@@ -1,10 +1,12 @@
 <template>
+  <div class="dot-plane">
+    <div class="dot-grid"></div>
+  </div>
   <div class="login-container">
     <h2>Register</h2>
     <form @submit.prevent="register">
       <input v-model="email" type="email" placeholder="Email" required />
       <input v-model="username" type="text" placeholder="Username" required />
-
       <input
         v-model="password"
         type="password"
@@ -60,7 +62,11 @@ export default {
       return /[!@#$%^&*(),.?":{}|<>]/.test(this.password);
     },
     passwordsMatch() {
-      return this.password && this.confirmPassword && this.password === this.confirmPassword;
+      return (
+        this.password &&
+        this.confirmPassword &&
+        this.password === this.confirmPassword
+      );
     },
     isPasswordValid() {
       return (
@@ -117,8 +123,65 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../style/style.scss";
+<style scoped>
+.dot-plane {
+  inset: 0;
+  background: #161f27;
+  overflow: hidden;
+  z-index: -1;
+  perspective: 800px;
+  width: 100vw;
+  height: 100vh;
+}
+
+.dot-grid {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400vw;
+  height: 400vh;
+  z-index: -1;
+  transform: translate(-50%, -50%) rotateX(65deg);
+  background-image: radial-gradient(#ffffff 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: scrollGrid 30s linear infinite;
+  opacity: 0.2;
+  will-change: transform;
+}
+
+@keyframes scrollGrid {
+  from {
+    transform: translate(-50%, -50%) rotateX(50deg) rotateZ(40deg) translate(0);
+  }
+  to {
+    transform: translate(-50%, -50%) rotateX(50deg) rotateZ(40deg)
+      translate(-300px);
+  }
+}
+
+.login-container {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  max-width: 400px;
+  width: 100%;
+  background-color: var(--background-alt);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  z-index: 999;
+}
+
+input,
+button {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+button {
+  cursor: pointer;
+}
 
 .password-rules {
   text-align: left;
