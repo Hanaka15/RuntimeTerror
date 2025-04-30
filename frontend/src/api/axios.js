@@ -1,4 +1,3 @@
-// src/api/axios.js
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import router from '@/router';
@@ -8,24 +7,30 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Response interceptor to catch 401s
+let isRedirecting = false; // Prevent redirection loops
+
+// Response interceptor to handle 401 errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => response, // Pass through successful responses
   async (error) => {
     if (error.response?.status === 401) {
       const authStore = useAuthStore();
 
+      // Clear user state if logged in
       if (authStore.user) {
         await authStore.logout();
       }
 
-      // Redirect to login if not already there
-      if (router.currentRoute.value.name !== 'Login') {
-        router.push({ name: 'Login' });
+      // Prevent multiple redirects to the login page
+      if (!isRedirecting && router.currentRoute.value.name !== 'Login') {
+        isRedirecting = true;
+        router.push({ name: 'Login' }).finally(() => {
+          isRedirecting = false;
+        });
       }
     }
 
-    return Promise.reject(error); // still reject to allow local try/catch
+    return Promise.reject(error); // Reject the error for local handling
   }
 );
 

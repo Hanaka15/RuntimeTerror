@@ -9,32 +9,54 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async fetchUser() {
+      if (this.user) {
+        console.log("User already fetched, skipping /auth/me request.");
+        return; // Avoid unnecessary API calls if user is already set
+      }
       try {
         const response = await api.get('/auth/me');
         this.user = response.data.researcher;
       } catch (error) {
+        console.error("Error fetching user:", error);
         this.user = null;
-        throw error;
+        if (error.response?.status !== 401) {
+          throw error; // Only throw if it's not a 401
+        }
       }
     },
 
     async login(credentials) {
-      await api.post('/auth/login', credentials);
-      await this.fetchUser();
+      try {
+        await api.post('/auth/login', credentials); // Login request
+        await this.fetchUser(); // Fetch user after successful login
+      } catch (error) {
+        console.error("Login error:", error);
+        throw error; // Let the caller handle the error
+      }
     },
 
     async register(userData) {
-      await api.post('/auth/register', userData);
-      await this.fetchUser();
+      try {
+        await api.post('/auth/register', userData); // Register request
+        await this.fetchUser(); // Fetch user after successful registration
+      } catch (error) {
+        console.error("Registration error:", error);
+        throw error;
+      }
     },
 
     async logout() {
-      await api.post('/auth/logout');
-      this.user = null;
+      try {
+        await api.post('/auth/logout'); // Logout request
+        this.user = null; // Clear user state
+      } catch (error) {
+        console.error("Logout error:", error);
+        throw error;
+      }
     },
   },
 
   getters: {
-    isAuthenticated: (state) => !!state.user,
+    isAuthenticated: (state) => !!state.user, // Returns true if user is set
   },
 });
