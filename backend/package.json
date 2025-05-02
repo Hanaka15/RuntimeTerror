@@ -8,10 +8,9 @@
     "start": "node server.js",
     "test": "jest"
   },
-
   "jest": {
-  "testEnvironment": "node"
-},
+    "testEnvironment": "node"
+  },
   "keywords": [],
   "author": "jahn",
   "license": "MIT",
@@ -33,6 +32,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "nodemon": "*"
+    "nodemon": "*",
+    "supertest": "^7.1.0"
   }
 }
