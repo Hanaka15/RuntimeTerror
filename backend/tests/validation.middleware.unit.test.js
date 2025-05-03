@@ -88,7 +88,7 @@ describe('validateSignup:', () => {
     //Boundary cases
     describe('Boundary cases:', () => {
         //1 below min length
-        it('should fail if username is just below min length', async () => {
+        it('should fail if password is just below min length', async () => {
             const res = await request(app).post('/signup').send({
                 username: 'Testuser',
                 email: 'test@test.com',
@@ -99,7 +99,7 @@ describe('validateSignup:', () => {
         });
 
         //exactely 8 chars
-        it('should pass if username is exactely 8 characters', async () => {
+        it('should pass if password is exactly 8 characters', async () => {
             const res = await request(app).post('/signup').send({
                 username: 'Testuser',
                 email: 'test@test.com',
@@ -214,7 +214,7 @@ describe('validateLogin:', () => {
     //negative cases
     describe('Negative cases:', () => {
 
-        //username missing
+        //email missing
         it('should fail when email is missing', async () => {
             const res = await request(app).post('/login').send({
                 email: '',
@@ -224,7 +224,7 @@ describe('validateLogin:', () => {
             expect(res.statusCode).toBe(400);
         });
 
-        //username invalid
+        //email invalid
         it('should fail when email is invalid', async () => {
             const res = await request(app).post('/login').send({
                 email: 'test',
