@@ -5,6 +5,12 @@ jest.setTimeout(30000);
 const request = require("supertest");
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
+const app = require("../server");
+const Study = require("../models/study.model");
+const Researcher = require("../models/researcher.model");
+
+// Declared to avoid repeat declarations
+let mongoServer;
 
 // Mock auth middleware that simulates an authenticated user
 jest.mock("../middleware/auth.middleware.js", () => ({
@@ -13,12 +19,6 @@ jest.mock("../middleware/auth.middleware.js", () => ({
         next();
     }
 }));
-
-const app = require("../server");
-const Study = require("../models/study.model");
-const Researcher = require("../models/researcher.model");
-
-let mongoServer;
 
 // Set up in-memory MongoDB server before running tests
 beforeAll(async () => {
@@ -86,7 +86,7 @@ describe("POST to create a study", () => {
         expect(res.body).toHaveProperty("error");
     });
 
-    // Negative test: missing 'type' in the question field
+    // Negative test: missing 'type' in the questions field
     it("should return 400 if a question is missing the 'type' field", async () => {
         const res = await request(app)
             .post("/studies")
@@ -98,6 +98,27 @@ describe("POST to create a study", () => {
                     {
                         type: "", 
                         question: "Is this a valid question?"
+                    }
+                ]
+            });
+    
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toHaveProperty("message", "Validation Error");
+        expect(res.body).toHaveProperty("error");
+    });
+
+    // Negative test: missing 'question' in the questions field
+    it("should return 400 if a question is missing the 'type' field", async () => {
+        const res = await request(app)
+            .post("/studies")
+            .send({
+                name: "Missing question text",
+                consent: "Please consent to be able to participate",
+                demographics: { age: 49 },
+                questions: [
+                    {
+                        type: "slider", 
+                        question: ""
                     }
                 ]
             });
@@ -243,7 +264,7 @@ describe("POST to create a study", () => {
 
     // Edge case: long question
     it("should accept a study with a very long question text", async () => {
-        const longQuestionText = "cats? ".repeat(100); 
+        const longQuestionText = "cats?".repeat(100); 
     
         const res = await request(app)
             .post("/studies")
