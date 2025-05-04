@@ -38,7 +38,7 @@ class Validator {
   static validateInput() {
     return Validator.validate([
       body('title').notEmpty().withMessage('Title is required'),
-      body('descriptio').notEmpty().withMessage('Description is required')
+      body('description').notEmpty().withMessage('Description is required')
     ]);
   }
 }
