@@ -38,7 +38,7 @@ export const useAuthStore = defineStore('auth', {
      async register(userData) {
       try {
         await api.post('/auth/register', userData); // Register request
-        await this.fetchUser(); // Fetch user after successful registration
+        //await this.fetchUser(); // Fetch user after successful registration
       } catch (error) {
         console.error("Registration error:", error);
         throw error;

@@ -29,6 +29,9 @@ class StudyController {
 
       res.status(201).json({ message: "Study created successfully", study: newStudy });
     } catch (error) {
+      if (error.name === "ValidationError") {
+        return res.status(400).json({ message: "Validation Error", error: error.message});
+      }
       sendErrorResponse(res, 500, "Study Creation Error:", error);
     }
   }

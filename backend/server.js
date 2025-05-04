@@ -13,7 +13,7 @@ require("./config/passport"); // Passport config
 const app = express();
 
 // === Connect to DB ===
-connectDB();
+//connectDB();
 
 // === Middleware ===
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -27,22 +27,42 @@ app.use(cors({
 }));
 
 // === Session Configuration ===
-app.use(session({
-  name: 'sessionId',
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    ttl: 60 * 60 * 24 * 7, // 7 days
-  }),
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-  }
-}));
+if (process.env.NODE_ENV !== "test") {
+  app.use(session({
+    name: 'sessionId',
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      ttl: 60 * 60 * 24 * 7, // 7 days
+    }),
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    }
+  }));
+} else {
+  // Use an in-memory session store for tests
+  const MemoryStore = require("memorystore")(session);
+  app.use(session({
+    name: 'sessionId',
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: new MemoryStore({
+      checkPeriod: 86400000, // Prune expired entries every 24h
+    }),
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    }
+  }));
+}
 
 // === Passport ===
 app.use(passport.initialize());
@@ -59,6 +79,10 @@ app.use((err, req, res, next) => {
 });
 
 // === Start Server ===
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+if (process.env.NODE_ENV !== "test") {
+  const PORT = process.env.PORT || 3000;
+  connectDB();
+  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+}
 
+module.exports = app;

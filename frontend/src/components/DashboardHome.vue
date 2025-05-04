@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-home">
+  <div class="dashboard-home" data-test="dashboard-home">
     <div>
       <button class="create-study" @click="$emit('changeView', 'CreateStudy')">
         <font-awesome-icon :icon="['fas', 'plus']" />
