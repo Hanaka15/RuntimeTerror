@@ -4,20 +4,22 @@
   </div>
   <div class="login-container">
     <h2>Register</h2>
-    <form @submit.prevent="register">
-      <input v-model="email" type="email" placeholder="Email" required />
-      <input v-model="username" type="text" placeholder="Username" required />
+    <form @submit.prevent="register" data-test="register-form">
+      <input v-model="email" type="email" placeholder="Email" required data-test="register-email" />
+      <input v-model="username" type="text" placeholder="Username" required data-test="register-username"/>
       <input
         v-model="password"
         type="password"
         placeholder="Password"
         required
+        data-test="register-password"
       />
       <input
         v-model="confirmPassword"
         type="password"
         placeholder="Confirm Password"
         required
+        data-test="register-confirm-password"
       />
 
       <!-- Show unmet password rules -->
@@ -27,7 +29,7 @@
         </li>
       </ul>
 
-      <button :disabled="!isPasswordValid" type="submit">Register</button>
+      <button :disabled="!isPasswordValid" type="submit" data-test="register-button">Register</button>
     </form>
     <p>
       Already have an account?
