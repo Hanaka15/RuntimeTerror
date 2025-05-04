@@ -59,7 +59,7 @@ describe("POST to create a study", () => {
             .send({
                 name: "which cats are cuter",
                 consent: "Do you consent to participate?",
-                demographics: { age: true },
+                demographics: { age: 29 },
                 questions: [
                     {
                         type: "multiple_choice",
@@ -93,10 +93,11 @@ describe("POST to create a study", () => {
             .send({
                 name: "Malformed question input",
                 consent: "Please consent to participate",
-                demographics: { age: true },
+                demographics: { age: 18 },
                 questions: [
                     {
-                        type: "", question: "Is this a valid question?"
+                        type: "", 
+                        question: "Is this a valid question?"
                     }
                 ]
             });
@@ -116,7 +117,7 @@ describe("POST to create a study", () => {
             .send({
                 name: "Study with max allowed characters in the consent form",
                 consent: mockConsentForm,
-                demographics: { age: true },
+                demographics: { age: 66 },
                 questions: [
                     {
                         type: "preference",
@@ -144,9 +145,11 @@ describe("POST to create a study", () => {
             .send({
                 name: "Study with too long consent form",
                 consent: mockConsentForm,
-                demographics: { age: true },
+                demographics: { age: 32 },
                 questions: [
-                    { type: "rank", question: "how would you rank these cats?" }
+                    { 
+                        type: "rank", 
+                        question: "how would you rank these cats?" }
                 ]
             });
 
@@ -164,10 +167,16 @@ describe("POST to create a study", () => {
             .send({
                 name: "study where the consent form is within character limits",
                 consent: mockConsentForm,
-                demographics: { age: true },
+                demographics: { age: 40 },
                 questions: [
-                    { type: "slider", question: "on a scale from 1-10, how cute is this cat?"},
-                    { type: "rank", question: "how would you rank these cats in terms of cuteness?"}
+                    { 
+                        type: "slider", 
+                        question: "on a scale from 1-10, how cute is this cat?"
+                    },
+                    { 
+                        type: "rank", 
+                        question: "how would you rank these cats in terms of cuteness?"
+                    }
                 ]
             });
         expect(res.statusCode).toBe(201);
@@ -178,5 +187,85 @@ describe("POST to create a study", () => {
         expect(studyInDb).not.toBeNull();
         expect(studyInDb.ownerId).toBe(testResearcherId);
         expect(studyInDb.consent).toBe(mockConsentForm);
+    });
+
+    // Edge case: short consent form
+    it("should accept a study with a 1-character consent form", async () => {
+        const res = await request(app)
+            .post("/studies")
+            .send({
+                name: "Minimal consent form",
+                consent: "Y",
+                demographics: { aiFamiliarity: 2 },
+                questions: [
+                    { 
+                        type: "slider", 
+                        question: "will this work?" 
+                    }
+                ]
+            });
+    
+        expect(res.statusCode).toBe(201);
+        expect(res.body).toHaveProperty("message", "Study created successfully");
+        expect(res.body.study.consent).toBe("Y");
+
+        const studyInDb = await Study.findOne({ name: "Minimal consent form" });
+        expect(studyInDb).not.toBeNull();
+        expect(studyInDb.ownerId).toBe(testResearcherId);
+        expect(studyInDb.consent).toBe("Y");
+    });
+
+    // Edge case: no demographics
+    it("should accept a study with an empty demographics object", async () => {
+        const res = await request(app)
+            .post("/studies")
+            .send({
+                name: "No Demographics",
+                consent: "We respect your privacy",
+                demographics: {},
+                questions: [
+                    { 
+                        type: "multiple_choice", 
+                        question: "Which one of these pictures contains a cat?" 
+                    }
+                ]
+            });
+    
+        expect(res.statusCode).toBe(201);
+        expect(res.body).toHaveProperty("message", "Study created successfully");
+        expect(res.body.study.demographics).toEqual();
+
+        const studyInDb = await Study.findOne({ name: "No Demographics" });
+        expect(studyInDb).not.toBeNull();
+        expect(studyInDb.ownerId).toBe(testResearcherId);
+        expect(studyInDb.demographics).toBe();
+    });
+
+    // Edge case: long question
+    it("should accept a study with a very long question text", async () => {
+        const longQuestionText = "cats? ".repeat(100); 
+    
+        const res = await request(app)
+            .post("/studies")
+            .send({
+                name: "Cats",
+                consent: "you're agreeing to answer a really long question",
+                demographics: { age: 20 },
+                questions: [
+                    {
+                        type: "rank",
+                        question: longQuestionText
+                    }
+                ]
+            });
+    
+        expect(res.statusCode).toBe(201);
+        expect(res.body).toHaveProperty("message", "Study created successfully");
+        expect(res.body.study.questions[0].question.length).toBeGreaterThanOrEqual(500);
+
+        const studyInDb = await Study.findOne({ name: "Cats" });
+        expect(studyInDb).not.toBeNull();
+        expect(studyInDb.ownerId).toBe(testResearcherId);
+        expect(studyInDb.questions[0].question.length).toBeGreaterThanOrEqual(500);
     });
 });
