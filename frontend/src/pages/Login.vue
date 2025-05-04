@@ -4,19 +4,20 @@
   </div>
     <div class="login-container">
       <h2>Login</h2>
-      <form @submit.prevent="login">
-        <input v-model="email" type="email" placeholder="Email" required />
+      <form @submit.prevent="login" data-test="login-form">
+        <input v-model="email" type="email" placeholder="Email" required data-test="login-email"/>
         <input
           v-model="password"
           type="password"
           placeholder="Password"
           required
+          data-test="login-password"
         />
-        <button type="submit">Login</button>
+        <button type="submit" data-test="login-button">Login</button>
       </form>
       <p>
         Don't have an account?
-        <router-link class="primary" to="/register">Register</router-link>
+        <router-link class="primary" to="/register" data-test="register-link">Register</router-link>
       </p>
     </div>
 </template>
