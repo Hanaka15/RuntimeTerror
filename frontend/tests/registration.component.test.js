@@ -77,4 +77,41 @@ describe('Register.vue', () => {
     // Assert that an alert is shown for unmet password requirements
     expect(window.alert).toHaveBeenCalledWith('Please meet all password requirements')
   })
+
+
+  it('registers with minimum valid password length (edge case)', async () => {
+    // Mock register function to simulate success
+    const registerMock = vi.fn().mockResolvedValue()
+    useAuthStore.mockReturnValue({ register: registerMock })
+  
+    // Mock router to capture redirection
+    const pushMock = vi.fn()
+    const wrapper = mount(Register, {
+      global: {
+        mocks: {
+          $router: { push: pushMock }
+        }
+      }
+    })
+  
+    // Simulate user entering edge-length valid password (8 chars)
+    await wrapper.find('input[type="email"]').setValue('edge@example.com')
+    await wrapper.find('input[type="text"]').setValue('edgeuser')
+    await wrapper.find('input[type="password"]').setValue('Abc123!!') //exactly 8 chars
+    await wrapper.findAll('input[type="password"]')[1].setValue('Abc123!!')
+  
+    // Submit form
+    await wrapper.find('form').trigger('submit.prevent')
+  
+    // Assert register method was called correctly
+    expect(registerMock).toHaveBeenCalledWith({
+      email: 'edge@example.com',
+      username: 'edgeuser',
+      password: 'Abc123!!'
+    })
+  
+    // Assert redirect to login
+    expect(pushMock).toHaveBeenCalledWith('/login')
+  })
+  
 })
