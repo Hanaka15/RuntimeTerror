@@ -1,4 +1,3 @@
-// models/study.model.js
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
@@ -11,7 +10,7 @@ const BaseQuestionSchema = new Schema(
     },
     question: { type: String, required: true },
   },
-  { discriminatorKey: "type" }
+  { discriminatorKey: "type", _id: true }
 );
 
 const StudySchema = new Schema({
@@ -29,13 +28,14 @@ const StudySchema = new Schema({
   ]
 });
 
-const Study = mongoose.model("Study", StudySchema);
 
-const Question = StudySchema.path("questions").schema;
+const Question = StudySchema.path("questions").$embeddedSchemaType.schema;
 
 require("./questions/multiple-choice")(Question);
 require("./questions/rank")(Question);
 require("./questions/preference")(Question);
 require("./questions/slider")(Question);
 
+const Study = mongoose.model("Study", StudySchema);
 module.exports = Study;
+module.exports.QuestionSchema = Question;

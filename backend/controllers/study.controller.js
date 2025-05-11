@@ -1,5 +1,6 @@
 const researcherModel = require("../models/researcher.model");
 const Study = require("../models/study.model");
+const { QuestionSchema } = require("../models/study.model");
 
 const sendErrorResponse = (res, status, message, error) => {
   console.error(message, error);
@@ -8,7 +9,7 @@ const sendErrorResponse = (res, status, message, error) => {
 
 class StudyController {
   static async findStudyById(studyId) {
-    const study = await Study.findOne({ id: studyId });
+    const study = await Study.findById(studyId);
     if (!study) {
       throw new Error("Study not found");
     }
@@ -19,10 +20,20 @@ class StudyController {
     try {
       const { name, questions, consent, demographics } = req.body;
 
+
+      const allowedTypes = Object.keys(QuestionSchema.discriminators || {});
+      const castedQuestions = questions.map((q) => {
+        if (!allowedTypes.includes(q.type)) {
+          throw new Error(`Unknown question type: ${q.type}`);
+        }
+        return q;
+      });
+
+
       const newStudy = await Study.create({
         name,
         ownerId: req.user.id,
-        questions,
+        questions: castedQuestions,
         consent,
         demographics,
       });
@@ -30,7 +41,7 @@ class StudyController {
       res.status(201).json({ message: "Study created successfully", study: newStudy });
     } catch (error) {
       if (error.name === "ValidationError") {
-        return res.status(400).json({ message: "Validation Error", error: error.message});
+        return res.status(400).json({ message: "Validation Error", error: error.message });
       }
       sendErrorResponse(res, 500, "Study Creation Error:", error);
     }
@@ -38,7 +49,7 @@ class StudyController {
 
   static async getStudies(req, res) {
     const userId = req.user.id;
-  
+
     try {
       const studies = await Study.find({
         $or: [
@@ -48,7 +59,7 @@ class StudyController {
       })
         .populate('collaborators.researcher', 'username avatar')
         .lean();
-  
+
       res.json(studies);
     } catch (error) {
       sendErrorResponse(res, 500, "Error fetching accessible studies:", error);
@@ -58,7 +69,8 @@ class StudyController {
   static async getStudyById(req, res) {
     try {
       const { study_id } = req.params;
-      const study = await this.findStudyById(study_id);
+      const study = await StudyController.findStudyById(study_id);
+
       res.status(200).json(study);
     } catch (error) {
       sendErrorResponse(
@@ -72,7 +84,8 @@ class StudyController {
   static async updateStudy(req, res) {
     try {
       const { study_id } = req.params;
-      const study = await this.findStudyById(study_id);
+      const study = await StudyController.findStudyById(study_id);
+
 
       // Update entire study fields
       const { studyname, questions } = req.body;
@@ -89,7 +102,8 @@ class StudyController {
   static async deleteStudy(req, res) {
     try {
       const { study_id } = req.params;
-      const study = await this.findStudyById(study_id);
+      const study = await StudyController.findStudyById(study_id);
+
 
       if (study.ownerId !== req.user.id) {
         return res
