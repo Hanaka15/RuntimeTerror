@@ -4,8 +4,9 @@
       <label for="questionText">Question Text</label>
       <input
         id="questionText"
-        v-model="questionData.questionText"
+        v-model="questionData.question"
         placeholder="Enter Question Text"
+        @input="emitQuestionChange"
       />
   
       <h4>Choices</h4>
@@ -23,7 +24,7 @@
         type: Object,
         required: true,
         default: () => ({
-          questionText: "",
+          question: "",
           choices: [],
         }), // Default to empty object if no data is passed
       },
@@ -32,7 +33,9 @@
       addChoice() {
         this.questionData.choices.push("");
       },
+      emitQuestionChange() {
+        this.$emit("update", this.questionData);
+      }
     },
   };
   </script>
-  

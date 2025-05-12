@@ -17,14 +17,15 @@ class StudyController {
 
   static async createStudy(req, res) {
     try {
-      const { name, questions, consent, demographics } = req.body;
-
+      const { name, questions, consent, demographics, published } = req.body;
+      
       const newStudy = await Study.create({
-        name,
         ownerId: req.user.id,
-        questions,
+        name,
         consent,
         demographics,
+        questions: [],
+        published: published || false,
       });
 
       res.status(201).json({ message: "Study created successfully", study: newStudy });

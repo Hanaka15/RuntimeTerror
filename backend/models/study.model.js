@@ -9,7 +9,7 @@ const BaseQuestionSchema = new Schema(
       required: true,
       enum: ["multiple_choice", "rank", "preference", "slider"],
     },
-    question: { type: String, required: true },
+    question: { type: String, required: true, validate: { validator: function(value) { return value !== null; } } },
   },
   { discriminatorKey: "type" }
 );

@@ -16,6 +16,7 @@
             <th>Responses</th>
             <th>Researchers</th>
             <th>Actions</th>
+            <!--<th>Status</th>-->
           </tr>
         </thead>
         <tbody>
@@ -36,7 +37,12 @@
               <button class="edit">
                 <font-awesome-icon :icon="['fas', 'pen-to-square']" />
               </button>
+            <!--  <button class="publish-boolean">publish</button> <-- I want this button to publish the quiz if it isn't already.
+              needs to look at the publish boolean and change it, the default is false (aka not published).-->
             </td>
+            <!--<td>
+              not published
+            </td> -->
           </tr>
         </tbody>
       </table>
