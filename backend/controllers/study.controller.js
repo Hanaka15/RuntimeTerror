@@ -20,7 +20,6 @@ class StudyController {
     try {
       const { name, questions, consent, demographics } = req.body;
 
-
       const allowedTypes = Object.keys(QuestionSchema.discriminators || {});
       const castedQuestions = questions.map((q) => {
         if (!allowedTypes.includes(q.type)) {
@@ -29,13 +28,13 @@ class StudyController {
         return q;
       });
 
-
       const newStudy = await Study.create({
         name,
         ownerId: req.user.id,
-        questions: castedQuestions,
         consent,
         demographics,
+        questions: castedQuestions,
+        published: published || false,
       });
 
       res.status(201).json({ message: "Study created successfully", study: newStudy });

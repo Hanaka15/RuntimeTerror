@@ -1,12 +1,13 @@
 <template>
     <div>
       <h3>Study Information</h3>
+      
       <label for="studyName">Study Name</label>
       <input id="studyName" v-model="study.name" placeholder="Enter Study Name" />
-  
+      
       <label for="consent">Consent Form</label>
       <textarea id="consent" v-model="study.consent" placeholder="Enter consent form text"></textarea>
-  
+      
       <h3>Demographics</h3>
       <div v-for="(demographic, index) in study.demographics" :key="index">
         <input v-model="demographic.field" placeholder="Enter Demographic Field" />
@@ -17,8 +18,12 @@
         </select>
       </div>
       <button @click="addDemographic">Add Demographic Field</button>
-  
-      <button @click="updateStudyInfo">Save Study Info</button>
+      
+      <div class="save-or-publish">
+        <button @click="updateStudyInfo">Save Study Info</button>
+    
+        <button @click="publishStudy">Publish study</button>
+      </div>
     </div>
   </template>
   
@@ -30,7 +35,12 @@
         this.study.demographics.push({ field: '', type: 'text' });
       },
       updateStudyInfo() {
-        this.$emit('update-study', this.study);
+        if (this.study.questions.length > 0) {     
+          this.$emit('update-study', this.study);
+        }
+      },
+      publishStudy() {
+        this.$emit('publish-study', this.study);
       }
     }
   };
