@@ -4,7 +4,7 @@
 
     <!-- Ranking list -->
     <div class="rank-target">
-      <p v-if="ranked.length === 0" class="placeholder" style="opacity: 0.6;">Drag items here to rank them</p>
+      <p v-if="ranked.length === 0" class="placeholder" style="opacity: 0.6; text-align: center;">Drag items here to rank them</p>
 
       <draggable
         :list="ranked"
@@ -85,8 +85,14 @@ export default {
 
 <style scoped lang="scss">
 .rank-answer {
-  text-align: center;
   margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 800px;
 }
 
 .rank-target,
@@ -97,7 +103,7 @@ export default {
   border: 1px solid var(--border);
   background-color: var(--background-alt);
   margin-bottom: 1.5rem;
-  
+
 }
 
 .rank-source {
@@ -105,6 +111,7 @@ export default {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 .rank-item {
@@ -115,6 +122,7 @@ export default {
   user-select: none;
   transition: all 0.2s;
   margin: 5px;
+  width: 100%;
   &:hover {
     background-color: #fff;
     color: black;
@@ -128,4 +136,28 @@ export default {
   font-weight: bold;
   margin-right: 0.5rem;
 }
+@media screen and (max-width: 1250px) {
+  .rank-answer {
+    width: 70%;
+  }
+
+  .rank-source {
+    border: none;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .rank-answer {
+    width: 100%;
+  }
+
+  .rank-source {
+    flex-direction:column;
+    border: none;
+    background-color: transparent;
+    width: 100%;
+  }
+}
+
+
 </style>

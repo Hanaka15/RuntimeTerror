@@ -18,7 +18,7 @@ class StudyController {
 
   static async createStudy(req, res) {
     try {
-      const { name, questions, consent, demographics } = req.body;
+      const { name, questions, consent, demographics, published } = req.body;
 
       const allowedTypes = Object.keys(QuestionSchema.discriminators || {});
       const castedQuestions = questions.map((q) => {

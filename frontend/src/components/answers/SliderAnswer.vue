@@ -40,6 +40,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 60%;
 }
 
 h3 {
@@ -47,9 +48,18 @@ h3 {
 }
 
 .slider {
-  width:80%;
+  width:100%;
   margin: 1rem 0;
 }
 
 
+@media screen and (max-width: 600px) { 
+  .slider-answer {
+    background-color: var(--background-alt);
+    padding: 5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border);
+    width: 100%;
+  }
+}
 </style>

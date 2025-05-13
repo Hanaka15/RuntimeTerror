@@ -38,21 +38,29 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  text-align: left;
+  width: 60%;
 }
 .choice-card {
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: var(--border-radius);
-  margin-bottom: var(--gap);
+  margin: var(--gap) 0;
   cursor: pointer;
   user-select: none;
   transition: background-color 0.2s;
-  width: 30vw;
+  width: 100%;
 }
 .choice-card:hover {
   background-color: var(--focus);
 }
 .choice-card.selected {
   background-color: var(--selection);
+}
+
+@media screen and (max-width: 600px) { 
+  .multiple-choice-answer {
+    text-align: center;
+  }
 }
 </style>
