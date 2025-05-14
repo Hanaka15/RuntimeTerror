@@ -48,6 +48,7 @@
     data() {
       return {
         study: {
+          id: null,
           name: '',
           consent: '',
           demographics: [],
@@ -199,18 +200,24 @@
         try {
           // if there's no id, it's a new study, save it as draft
           if (!newStudyInfo.id) {
+            //newStudyInfo.id = this.study.id;
             newStudyInfo.published = false;
-
+            
             console.log('Submitting study:', JSON.stringify(newStudyInfo, null, 2));
+            
             const response = await api.post('/studies', newStudyInfo);
-
+            
             this.study = response.data.study;
+            newStudyInfo.id = response.data.study._id;
+            this.study.id = response.data.study._id;
             alert('study saved as draft');
 
           } else {
+            console.log('Updating study:', JSON.stringify(newStudyInfo, null, 2));
             const response = await api.patch(`/studies/${newStudyInfo.id}`, newStudyInfo);
 
             this.study = response.data.study;
+            this.study.id = response.data.study._id;
             alert('study updated successfully');
           }
         } catch (error) {

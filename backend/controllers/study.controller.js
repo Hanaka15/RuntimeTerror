@@ -77,11 +77,16 @@ class StudyController {
       const { study_id } = req.params;
       const study = await StudyController.findStudyById(study_id);
 
+      const { name, questions, consent, demographics, published } = req.body;
 
       // Update entire study fields
-      const { studyname, questions } = req.body;
-      if (studyname) study.studyname = studyname;
+/*       const { studyname } = req.body;
+      if (studyname) study.name = studyname;
+      //if (questions) study.questions = questions;  */
+      if (name) study.name = name;
       if (questions) study.questions = questions;
+      if (consent) study.consent = consent;
+      if (demographics) study.demographics = demographics;
 
       await study.save();
       res.status(200).json({ message: "Study updated successfully", study });
