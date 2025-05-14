@@ -20,6 +20,35 @@ class StudyController {
     try {
       const { name, questions, consent, demographics, published } = req.body;
 
+      //  const allowedTypes = Object.keys(QuestionSchema.discriminators || {});
+
+      /*       const normalizeQuestionFields = (q) => {
+              const normalized = { ...q };
+      
+              if (q.type === "slider") {
+                if (q.minValue !== undefined) normalized.min = q.minValue;
+                if (q.maxValue !== undefined) normalized.max = q.maxValue;
+                delete normalized.minValue;
+                delete normalized.maxValue;
+              }
+      
+              if (q.type === "rank") {
+                if (q.items !== undefined) normalized.items = q.items;
+                delete normalized.items;
+              }
+      
+              return normalized;
+            } */
+
+      /*       const castedQuestions = questions.map((q) => {
+              if (!allowedTypes.includes(q.type)) {
+                throw new Error(`Unknown question type: ${q.type}`);
+              }
+      
+              const normalized = normalizeQuestionFields(q);
+              return new QuestionSchema.discriminators[q.type](normalized);
+            }); */
+
       const newStudy = await Study.create({
         name,
         ownerId: req.user.id,
@@ -64,11 +93,7 @@ class StudyController {
 
       res.status(200).json(study);
     } catch (error) {
-      sendErrorResponse(
-        res,
-        error.message,
-        error
-      );
+      sendErrorResponse(res, 404, "Study not found", error);
     }
   }
 
@@ -110,11 +135,7 @@ class StudyController {
       await study.remove();
       res.status(200).json({ message: "Study deleted successfully" });
     } catch (error) {
-      sendErrorResponse(
-        res,
-        error.message,
-        error
-      );
+      sendErrorResponse(res, 500, "Unexpected error fetching study", error);
     }
   }
 }
