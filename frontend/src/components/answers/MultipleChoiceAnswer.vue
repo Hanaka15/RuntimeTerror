@@ -43,6 +43,7 @@ export default {
 }
 .choice-card {
   padding: 1rem;
+  background-color: var(--background-alt);
   border: 1px solid var(--border);
   border-radius: var(--border-radius);
   margin: var(--gap) 0;

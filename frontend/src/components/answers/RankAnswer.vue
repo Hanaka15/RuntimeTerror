@@ -122,6 +122,7 @@ export default {
   user-select: none;
   transition: all 0.2s;
   margin: 5px;
+  background-color: var(--background-alt);
   width: 100%;
   &:hover {
     background-color: #fff;

@@ -30,9 +30,9 @@
           Finish Survey
         </button>
       </div>
-      <div class="progress-bar-wrapper" v-if="sessionStarted">
+      <!-- <div class="progress-bar-wrapper" v-if="sessionStarted">
         <div class="progress-bar-fill" :style="{ width: progressPercent + '%' }"></div>
-      </div>
+      </div> -->
 
       <div class="question-tracker">
         <span v-for="(q, i) in questionStatusList" :key="q.index"
@@ -223,8 +223,6 @@ export default {
   display: flex;
   margin-top: auto;
   padding-bottom: 5rem;
-  justify-content: space-between;
-  width: 100%;
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -257,20 +255,25 @@ export default {
   justify-content: space-between;
   flex: 1;
   margin-top: 1rem;
-  gap: 0.1rem;
   width: 100%;
   position: absolute;
-  bottom: 8px;
+  bottom: 0;
   left: 0;
+  transition: all 2s;
 }
 
 .tracker {
   flex: 1;
   text-align: center;
   border-right: 1px solid var(--border);
+  border-top: 4px solid darkgray;
   cursor: pointer;
   padding: 2rem 0;
-  transition: background-color 0.2s;
+   transition: border-top-color 0.6s;
+
+  &:last-child {
+    border-right: none;
+  }
 
   &:hover {
     background-color: var(--background);
