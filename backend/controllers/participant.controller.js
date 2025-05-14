@@ -1,6 +1,5 @@
 const Participant = require("../models/participant.model");
 const Study = require("../models/study.model");
-const crypto = require("crypto");
 
 const sendErrorResponse = (res, status, message, error) => {
     console.error(message, error);
@@ -28,7 +27,6 @@ class ParticipantController {
 
             const participant = await Participant.create({
                 studyId: quizId,
-                participantId: crypto.randomUUID(),
                 demographics: demographics || {},
                 answers: [],
             });
