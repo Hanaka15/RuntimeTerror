@@ -179,6 +179,8 @@ export default {
       } catch (error) {
         console.error("Failed to submit answers", error);
       }
+
+      
     },
   },
   mounted() {

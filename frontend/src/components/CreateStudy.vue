@@ -20,7 +20,6 @@
           <option value="multiple_choice">Multiple Choice</option>
           <option value="slider">Slider</option>
           <option value="rank">Rank</option>
-          <option value="preference">Preference</option>
         </select>
       </div>
     </div>
@@ -35,6 +34,7 @@
   import Rank from './questions/Rank.vue';
   import Preference from './questions/Preference.vue';
   import api from '../api/axios';
+  import FileUpload from './questions/fileUpload.vue';
   
   export default {
     components: {
@@ -42,12 +42,12 @@
       StudyInfo,
       MultipleChoice,
       Slider,
-      Rank,
-      Preference
+      Rank
     },
     data() {
       return {
         study: {
+          id: null,
           name: '',
           consent: '',
           demographics: [],
@@ -94,15 +94,6 @@
               allowTie: false
             };
             break;
-
-          case 'preference':
-            newQuestion = {
-              name: 'New Question',
-              type,
-              question: '',
-              pairs: [{ left: 'Left', right: 'Right'}]
-            }
-            break;
           
           default:
             newQuestion = {
@@ -138,7 +129,6 @@
         delete this.selectedQuestion.step;
         delete this.selectedQuestion.defaultValue;
         delete this.selectedQuestion.allowTie;
-        delete this.selectedQuestion.pairs;
 
         switch (this.selectedQuestion.type) {
           case 'multiple_choice':
@@ -165,13 +155,6 @@
               allowTie: this.selectedQuestion.allowTie ?? false
             });
             break;
-
-          case 'preference':
-            Object.assign(this.selectedQuestion, {
-              ...questionBase,
-              pairs: this.selectedQuestion.pairs || [{ left: 'Left', right: 'Right'}],
-            });
-            break;
         }
 
         this.selectedQuestionComponent = this.getQuestionComponent(this.selectedQuestion.type);
@@ -187,8 +170,6 @@
             return 'Slider';
           case 'rank':
             return 'Rank';
-          case 'preference':
-            return 'Preference';
           default:
             return null;
         }
@@ -199,18 +180,24 @@
         try {
           // if there's no id, it's a new study, save it as draft
           if (!newStudyInfo.id) {
+            //newStudyInfo.id = this.study.id;
             newStudyInfo.published = false;
-
+            
             console.log('Submitting study:', JSON.stringify(newStudyInfo, null, 2));
+            
             const response = await api.post('/studies', newStudyInfo);
-
+            
             this.study = response.data.study;
+            newStudyInfo.id = response.data.study._id;
+            this.study.id = response.data.study._id;
             alert('study saved as draft');
 
           } else {
+            console.log('Updating study:', JSON.stringify(newStudyInfo, null, 2));
             const response = await api.patch(`/studies/${newStudyInfo.id}`, newStudyInfo);
 
             this.study = response.data.study;
+            this.study.id = response.data.study._id;
             alert('study updated successfully');
           }
         } catch (error) {
