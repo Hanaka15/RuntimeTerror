@@ -6,11 +6,34 @@ import Login from '../pages/Login.vue';
 import Register from '../pages/Register.vue';
 import Dashboard from '../pages/Dashboard.vue';
 import AnswerQuiz from '../components/AnswerStudy.vue';
+import DashboardHome from '../components/DashboardHome.vue';
+import ProfileSettings from '../components/ProfileSettings.vue';
+import CreateStudy from '../components/CreateStudy.vue';
 
 const routes = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
-  { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } },
+  { path: '/dashboard',
+    component: Dashboard,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'DashboardHome',
+        component: DashboardHome,
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: ProfileSettings,
+      },
+      {
+        path: 'create',
+        name: 'CreateStudy',
+        component: CreateStudy,
+      },
+    ],
+  },
   { path: '/session/:study_id', name: 'AnswerStudy', component: AnswerQuiz, meta: { requiresAuth: false } },
   { path: '/:catchAll(.*)', redirect: '/login' },
 ];
@@ -20,25 +43,14 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-
-  // Only fetch if user is not already set
-  if (!authStore.user) {
-    try {
-      await authStore.fetchUser();
-    } catch (err) {
-      console.warn('User not authenticated');
-    }
-  }
-
   const isAuth = !!authStore.user;
-
   if (to.meta.requiresAuth && !isAuth) {
     return next('/login');
   }
-
-  return next();
+  next();
 });
+
 
 export default router;

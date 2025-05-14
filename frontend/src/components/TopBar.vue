@@ -1,5 +1,5 @@
 <script>
-import { useAuthStore } from "../store/authStore"; // fixed path: plural 'stores'
+import { useAuthStore } from "../store/authStore";
 import router from "@/router";
 
 export default {
@@ -13,7 +13,7 @@ export default {
       const authStore = useAuthStore();
       try {
         await authStore.logout();
-        router.push("/dashboard");
+        window.location.href = "/";
       } catch (err) {
         console.error("Logout failed:", err);
       }

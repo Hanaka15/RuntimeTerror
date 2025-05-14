@@ -5,8 +5,8 @@
           <img class="logo" src="../assets/logo.svg" alt="">
         </div>
         <ul class="nav-list">
-          <li @click="$emit('change-view', 'DashboardHome')"><font-awesome-icon :icon="['fas', 'home']" /> Home</li>
-          <li @click="$emit('change-view', 'ProfileSettings')"><font-awesome-icon :icon="['fas', 'user']" /> Profile</li>
+          <router-link class="nav-link" to="/dashboard"><font-awesome-icon :icon="['fas', 'home']" /> Home</router-link>
+          <router-link class="nav-link" to="/dashboard/settings"><font-awesome-icon :icon="['fas', 'user']" /> Profile</router-link>
         </ul>
       </div>
     </div>
@@ -46,15 +46,17 @@
       flex-direction: column;
       gap: 0.125;
   
-      li {
+      .nav-link {
         cursor: pointer;
         padding: 0.75rem 1rem;
         border-radius: 0.25rem;
+        color: var(--text-main);
         transition: background-color 0.2s ease;
   
         &:hover {
           background-color: #ffffff25;
           transform: scale(1.025);
+          text-decoration: none;
         }
       }
     }
