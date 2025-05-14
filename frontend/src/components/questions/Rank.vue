@@ -10,7 +10,7 @@
       />
   
       <h4>Options</h4>
-      <div v-for="(option, index) in questionData.items" :key="index">
+      <div v-for="(item, index) in questionData.items" :key="index">
         <input v-model="questionData.items[index]" placeholder="Enter Option" @input="emitQuestionChange"/>
       </div>
       <button @click="addOption">Add Option</button>

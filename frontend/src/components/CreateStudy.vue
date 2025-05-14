@@ -20,6 +20,7 @@
           <option value="multiple_choice">Multiple Choice</option>
           <option value="slider">Slider</option>
           <option value="rank">Rank</option>
+          <option value="preference">Preference</option>
         </select>
       </div>
     </div>
@@ -32,6 +33,7 @@
   import MultipleChoice from './questions/MultipleChoice.vue';
   import Slider from './questions/Slider.vue';
   import Rank from './questions/Rank.vue';
+  import Preference from './questions/Preference.vue';
   import api from '../api/axios';
   
   export default {
@@ -40,7 +42,8 @@
       StudyInfo,
       MultipleChoice,
       Slider,
-      Rank
+      Rank,
+      Preference
     },
     data() {
       return {
@@ -91,6 +94,15 @@
               allowTie: false
             };
             break;
+
+          case 'preference':
+            newQuestion = {
+              name: 'New Question',
+              type,
+              question: '',
+              pairs: [{ left: 'Left', right: 'Right'}]
+            }
+            break;
           
           default:
             newQuestion = {
@@ -121,14 +133,12 @@
 
         delete this.selectedQuestion.choices;
         delete this.selectedQuestion.items;
-        delete this.selectedQuestion.items;
         delete this.selectedQuestion.min;
         delete this.selectedQuestion.max;
-        delete this.selectedQuestion.minValue;
-        delete this.selectedQuestion.maxValue;
         delete this.selectedQuestion.step;
         delete this.selectedQuestion.defaultValue;
         delete this.selectedQuestion.allowTie;
+        delete this.selectedQuestion.pairs;
 
         switch (this.selectedQuestion.type) {
           case 'multiple_choice':
@@ -155,6 +165,13 @@
               allowTie: this.selectedQuestion.allowTie ?? false
             });
             break;
+
+          case 'preference':
+            Object.assign(this.selectedQuestion, {
+              ...questionBase,
+              pairs: this.selectedQuestion.pairs || [{ left: 'Left', right: 'Right'}],
+            });
+            break;
         }
 
         this.selectedQuestionComponent = this.getQuestionComponent(this.selectedQuestion.type);
@@ -170,6 +187,8 @@
             return 'Slider';
           case 'rank':
             return 'Rank';
+          case 'preference':
+            return 'Preference';
           default:
             return null;
         }
