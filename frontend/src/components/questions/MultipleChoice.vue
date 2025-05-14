@@ -14,11 +14,17 @@
         <input v-model="questionData.choices[index]" placeholder="Enter Choice" />
       </div>
       <button @click="addChoice">Add Choice</button>
+      <h4>Attach Files</h4>
+      <Fileupload :questionData="questionData" @update="emitQuestionChange"></Fileupload>
     </div>
   </template>
   
   <script>
+  import Fileupload from './fileUpload.vue';
   export default {
+    components: {
+      Fileupload,
+    },
     props: {
       questionData: {
         type: Object,
@@ -26,6 +32,7 @@
         default: () => ({
           question: "",
           choices: [],
+          files:[],
         }), // Default to empty object if no data is passed
       },
     },
@@ -39,3 +46,7 @@
     },
   };
   </script>
+
+  <style lang="scss" scoped>
+ h3, h4 {}
+</style>

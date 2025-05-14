@@ -13,13 +13,18 @@
         <div v-for="(pair, index) in questionData.pairs" :key="index">
             <input v-model="pair.left" placeholder="Left Option" @input="emitQuestionChange"/>
             <input v-model="pair.right" placeholder="Right Option" @input="emitQuestionChange"/>
+            <Fileupload :questionData="questionData" @update="emitQuestionChange" />
         </div>
         <button @click="addPair">Add to Pair</button>
     </div>
 </template>
 
 <script>
+import Fileupload from './fileUpload.vue';
 export default {
+    components: {
+        Fileupload
+    },
     props: {
         questionData: {
             type: Object,
@@ -27,6 +32,7 @@ export default {
             default: () => ({
                 question: "",
                 pairs: [],
+                files: [],
             }),
         },
     },

@@ -20,6 +20,7 @@
           <option value="multiple_choice">Multiple Choice</option>
           <option value="slider">Slider</option>
           <option value="rank">Rank</option>
+          <option value="preference">Comparison</option>
         </select>
       </div>
     </div>
@@ -42,7 +43,8 @@
       StudyInfo,
       MultipleChoice,
       Slider,
-      Rank
+      Rank,
+      Preference,
     },
     data() {
       return {
@@ -92,6 +94,15 @@
               question: '',
               items: ['Artifact 1', 'Artifact 2'],
               allowTie: false
+            };
+            break;
+
+          case 'preference':
+            newQuestion = {
+              name: 'New Question',
+              type,
+              question: '',
+              pairs: [{ left: '', right: '' }]
             };
             break;
           
@@ -170,6 +181,8 @@
             return 'Slider';
           case 'rank':
             return 'Rank';
+            case 'preference':
+              return 'Preference';
           default:
             return null;
         }
