@@ -6,23 +6,24 @@
 
     <div class="right-side">
       <!-- Study Info Section -->
-      <StudyInfo :study="study" @update-study="updateStudy" />
+      <StudyInfo :study="study" @update-study="updateStudy" @add-question="addQuestion" />
 
       <!-- Question Settings Section -->
       <div v-if="selectedQuestion">
         <h3>Question Settings</h3>
-
-        <!-- Dynamically Render the Right Question Component -->
-        <component :is="selectedQuestionComponent" :questionData="selectedQuestionData" @update="updateQuestionData" />
-
-        <!-- Change Question Type -->
         <select v-model="selectedQuestion.type" @change="changeQuestionType">
           <option value="multiple_choice">Multiple Choice</option>
           <option value="slider">Slider</option>
           <option value="rank">Rank</option>
           <option value="preference">Comparison</option>
         </select>
+
+        <!-- Dynamically Render the Right Question Component -->
+        <component :is="selectedQuestionComponent" :questionData="selectedQuestionData" @update="updateQuestionData" />
+
+        <!-- Change Question Type -->
       </div>
+      
     </div>
   </div>
 </template>
@@ -243,15 +244,7 @@
     width: 75%;
     padding: 10px;
   }
-  
-  button {
-    margin-top: 10px;
-    padding: 5px 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
+
   
   button:hover {
     background-color: #45a049;

@@ -8,14 +8,14 @@
         placeholder="Enter Question Text"
         @input="emitQuestionChange"
       />
+      <h4>Attach Files</h4>
+      <Fileupload :questionData="questionData" @update="emitQuestionChange"></Fileupload>
   
       <h4>Choices</h4>
       <div v-for="(choice, index) in questionData.choices" :key="index">
         <input v-model="questionData.choices[index]" placeholder="Enter Choice" />
       </div>
       <button @click="addChoice">Add Choice</button>
-      <h4>Attach Files</h4>
-      <Fileupload :questionData="questionData" @update="emitQuestionChange"></Fileupload>
     </div>
   </template>
   
@@ -46,7 +46,3 @@
     },
   };
   </script>
-
-  <style lang="scss" scoped>
- h3, h4 {}
-</style>

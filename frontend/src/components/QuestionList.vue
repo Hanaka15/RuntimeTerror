@@ -4,7 +4,6 @@
       <div v-for="(question, index) in questions" :key="index" class="question-item" :class="{ selected: modelValue === choice }" @click="selectQuestion(index)">
         {{ question.question || `Question ${index + 1}` }}
       </div>
-      <button @click="addQuestion">Add Question</button>
     </div>
   </template>
   
@@ -12,10 +11,7 @@
   export default {
     props: ['questions'],
     methods: {
-      addQuestion() {
-        this.$emit('add-question');
-      },
-      selectQuestion(index) {
+        selectQuestion(index) {
         this.$emit('select-question', index);
       }
     }

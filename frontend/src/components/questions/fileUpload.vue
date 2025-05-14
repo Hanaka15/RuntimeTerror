@@ -1,10 +1,5 @@
 <template>
     <div>
-      <h3>File Upload Question</h3>
-      <label>Question Text</label>
-      <input v-model="questionData.question" placeholder="Enter question" />
-  
-      <label>Upload Files (2 or more)</label>
       <input type="file" @change="handleFileChange" :accept="allowedTypes" multiple />
   
       <div v-if="questionData.files && questionData.files.length" class="file-list">

@@ -23,6 +23,7 @@
         <button @click="updateStudyInfo">Save Study Info</button>
     
         <button @click="publishStudy">Publish study</button>
+        <button @click="addQuestion">Add Question</button>
       </div>
     </div>
   </template>
@@ -41,7 +42,10 @@
       },
       publishStudy() {
         this.$emit('publish-study', this.study);
-      }
+      },
+      addQuestion() {
+        this.$emit('add-question');
+      },
     }
   };
   </script>

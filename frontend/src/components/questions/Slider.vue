@@ -1,5 +1,8 @@
 <template>
     <div>
+
+      <h4>Attach Files</h4>
+      <FileUpload :questionData="questionData" @update="emitQuestionChange"></FileUpload>
       <h3>Slider Question</h3>
   
       <label for="questionText">Question Text</label>
@@ -31,7 +34,11 @@
   </template>
   
   <script>
+  import FileUpload from './fileUpload.vue';
   export default {
+    components: {
+      FileUpload,
+    },
     props: {
       questionData: {
         type: Object,
@@ -40,6 +47,7 @@
           question: "",
           min: 0,
           max: 100,
+          files: [],
         }), // Default to an object with slider values
       },
     },

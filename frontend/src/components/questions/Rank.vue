@@ -1,6 +1,8 @@
 <template>
     <div>
       <h3>Rank Question</h3>
+      <h4>Attach Files</h4>
+      <FileUpload :questionData="questionData" @update="emitQuestionChange"></FileUpload>
       <label for="questionText">Question Text</label>
       <input
         id="questionText"
@@ -18,7 +20,11 @@
   </template>
   
   <script>
+  import FileUpload from './fileUpload.vue';
   export default {
+    components:{
+      FileUpload
+    },
     props: {
       questionData: {
         type: Object,
@@ -26,6 +32,7 @@
         default: () => ({
           question: "",
           items: [],
+          files: [],
         }), 
       },
     },
