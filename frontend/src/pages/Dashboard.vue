@@ -3,7 +3,6 @@ import { useAuthStore } from "../store/authStore";
 import TopBar from "../components/TopBar.vue";
 import SideBar from "../components/SideBar.vue";
 
-// Import example subcomponents
 import DashboardHome from "../components/DashboardHome.vue";
 import ProfileSettings from "../components/ProfileSettings.vue";
 import CreateStudy from "../components/CreateStudy.vue";
@@ -28,11 +27,6 @@ export default {
     },
   },
   methods: {
-    async logout() {
-      const authStore = useAuthStore();
-      await authStore.logout();
-      this.$router.push("/login");
-    },
     changeView(viewName) {
       this.currentView = viewName;
     },
@@ -48,7 +42,7 @@ export default {
 
 <template>
   <div class="dashboard-container">
-    <TopBar :user="user" @logout="logout" />
+    <TopBar :user="user"/>
     <SideBar :user="user" @change-view="changeView" />
     <div class="content">
       <div class="content-container">

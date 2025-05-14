@@ -20,7 +20,6 @@
         required
       />
 
-      <!-- Show unmet password rules -->
       <ul v-if="unmetPasswordRules.length" class="password-rules">
         <li v-for="(rule, index) in unmetPasswordRules" :key="index">
           {{ rule.label }}

@@ -1,11 +1,10 @@
-// src/main.js
 import { createApp } from 'vue';
 import App from './App.vue';
 import { createPinia } from 'pinia';
 import router from './router';
-import { useAuthStore } from './store/authStore';
 import './style/css/water.css';
 import './style/css/style.css';
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 // Font Awesome imports
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -26,10 +25,10 @@ const app = createApp(App);
 
 app.component('font-awesome-icon', FontAwesomeIcon);
 
-app.use(createPinia());
-app.use(router);
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
 
-const authStore = useAuthStore();
-authStore.fetchUser();
+app.use(pinia);
+app.use(router);
 
 app.mount('#app');

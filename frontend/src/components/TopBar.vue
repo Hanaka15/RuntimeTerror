@@ -1,25 +1,32 @@
-
 <script>
+import { useAuthStore } from "../store/authStore"; // fixed path: plural 'stores'
+import router from "@/router";
+
 export default {
   data() {
     return {
       showDropdown: false,
     };
   },
-  props: {
-    user: {
-      type: Object,
-      required: true,
+  methods: {
+    async logout() {
+      const authStore = useAuthStore();
+      try {
+        await authStore.logout();
+        router.push("/dashboard");
+      } catch (err) {
+        console.error("Logout failed:", err);
+      }
     },
   },
-  methods: {
-    logout() {
-      this.$emit('logout');
+  computed: {
+    user() {
+      const authStore = useAuthStore();
+      return authStore.user;
     },
   },
 };
 </script>
-
 
 <template>
   <div class="topbar">
