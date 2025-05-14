@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', {
         throw error;
       }
     },
-    
+
 
     async logout() {
       try {
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         console.error('Logout error:', error);
       } finally {
-        this.user = null;
+        this.$reset();
       }
     },
 

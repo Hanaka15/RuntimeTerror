@@ -1,9 +1,6 @@
 <template>
   <div class="dashboard-home" data-test="dashboard-home">
     <div>
-      <button class="create-study" @click="$emit('changeView', 'CreateStudy')">
-        <font-awesome-icon :icon="['fas', 'plus']" />
-      </button>
     </div>
     <div class="container">
       <h2>Surveys</h2>
@@ -27,7 +24,7 @@
             <td>
               <div class="researchers">
                 <img
-                  v-for="n in 3"
+                v-for="n in 3"
                   :key="n"
                   :src="`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${Math.random().toString(36).substring(7)}`"
                 />
@@ -37,17 +34,17 @@
               <button class="edit">
                 <font-awesome-icon :icon="['fas', 'pen-to-square']" />
               </button>
-            <!--  <button class="publish-boolean">publish</button> <-- I want this button to publish the quiz if it isn't already.
-              needs to look at the publish boolean and change it, the default is false (aka not published).-->
             </td>
-            <!--<td>
-              not published
-            </td> -->
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+  <router-link class="nav-link" to="/dashboard/create">
+  <button class="create-study">
+    <font-awesome-icon :icon="['fas', 'plus']" />
+  </button>
+  </router-link>
 </template>
 
 <script>

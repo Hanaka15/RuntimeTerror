@@ -3,32 +3,15 @@ import { useAuthStore } from "../store/authStore";
 import TopBar from "../components/TopBar.vue";
 import SideBar from "../components/SideBar.vue";
 
-import DashboardHome from "../components/DashboardHome.vue";
-import ProfileSettings from "../components/ProfileSettings.vue";
-import CreateStudy from "../components/CreateStudy.vue";
-
 export default {
   components: {
     TopBar,
     SideBar,
-    DashboardHome,
-    ProfileSettings,
-    CreateStudy,
-  },
-  data() {
-    return {
-      currentView: "DashboardHome",
-    };
   },
   computed: {
     user() {
       const authStore = useAuthStore();
       return authStore.user;
-    },
-  },
-  methods: {
-    changeView(viewName) {
-      this.currentView = viewName;
     },
   },
   mounted() {
@@ -42,11 +25,11 @@ export default {
 
 <template>
   <div class="dashboard-container">
-    <TopBar :user="user"/>
-    <SideBar :user="user" @change-view="changeView" />
+    <TopBar :user="user" />
+    <SideBar :user="user" />
     <div class="content">
       <div class="content-container">
-        <component :is="currentView" @change-view="changeView" />
+        <router-view />
       </div>
     </div>
   </div>
