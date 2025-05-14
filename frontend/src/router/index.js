@@ -11,7 +11,7 @@ const routes = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } },
-  { path: '/participate/:study_id', name: 'AnswerStudy', component: AnswerQuiz, meta: { requiresAuth: false } },
+  { path: '/session/:study_id', name: 'AnswerStudy', component: AnswerQuiz, meta: { requiresAuth: false } },
   { path: '/:catchAll(.*)', redirect: '/login' },
 ];
 

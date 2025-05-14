@@ -35,7 +35,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-     async register(userData) {
+    async register(userData) {
       try {
         await api.post('/auth/register', userData); // Register request
         //await this.fetchUser(); // Fetch user after successful registration

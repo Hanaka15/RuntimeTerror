@@ -2,47 +2,51 @@
   <div class="dot-plane">
     <div class="dot-grid"></div>
   </div>
+
   <div class="answer-quiz">
-    <ConsentDemographics v-if="!sessionStarted && study" :study="study" :studyId="$route.params.study_id"
-      @session-started="handleSessionStarted" />
+    <Results v-if="quizCompleted" />
 
-    <div v-if="study && sessionStarted" class="quiz-container">
-      <div class="question-content" v-if="currentQuestion">
-        <MultipleChoiceAnswer v-if="currentQuestion.type === 'multiple_choice'" :question="currentQuestion"
-          :modelValue="answers[currentQuestion._id]" @update:modelValue="handleAnswer" />
+    <template v-else>
+      <ConsentDemographics v-if="!sessionStarted && study" :study="study" :studyId="$route.params.study_id"
+        @session-started="handleSessionStarted" />
 
-        <RankAnswer v-else-if="currentQuestion.type === 'rank'" :key="currentQuestion._id" :question="currentQuestion"
-          :modelValue="answers[currentQuestion._id]" @update:modelValue="handleAnswer" />
+      <div v-if="study && sessionStarted" class="quiz-container">
+        <div class="question-content" v-if="currentQuestion">
+          <MultipleChoiceAnswer v-if="currentQuestion.type === 'multiple_choice'" :question="currentQuestion"
+            :modelValue="answers[currentQuestion._id]" @update:modelValue="handleAnswer" />
 
-        <SliderAnswer v-else-if="currentQuestion.type === 'slider'" :question="currentQuestion"
-          :modelValue="answers[currentQuestion._id]" @update:modelValue="handleAnswer" />
+          <RankAnswer v-else-if="currentQuestion.type === 'rank'" :key="currentQuestion._id" :question="currentQuestion"
+            :modelValue="answers[currentQuestion._id]" @update:modelValue="handleAnswer" />
 
-        <p v-else>Error loading question</p>
+          <SliderAnswer v-else-if="currentQuestion.type === 'slider'" :question="currentQuestion"
+            :modelValue="answers[currentQuestion._id]" @update:modelValue="handleAnswer" />
+
+          <p v-else>Error loading question</p>
+        </div>
+
+        <div class="navigation-buttons">
+          <button @click="handleExit">
+            {{ currentIndex === 0 ? 'Exit' : 'Previous' }}
+          </button>
+          <button v-if="currentIndex < totalCount - 1" @click="nextQuestion">
+            Next
+          </button>
+          <button v-else @click="submitAnswers" :disabled="answeredCount !== totalCount">
+            Finish Survey
+          </button>
+        </div>
+
+        <div class="question-tracker">
+          <span v-for="(q, i) in questionStatusList" :key="q.index"
+            :class="['tracker', { answered: q.answered, current: q.isCurrent }]" @click="currentIndex = i">
+            {{ q.index }}
+          </span>
+        </div>
       </div>
-      <div v-if="study && sessionStarted" class="navigation-buttons">
-        <button @click="handleExit">
-          {{ currentIndex === 0 ? 'Exit' : 'Previous' }}
-        </button>
-        <button v-if="currentIndex < totalCount - 1" @click="nextQuestion">
-          Next
-        </button>
-        <button v-else @click="submitAnswers" :disabled="answeredCount !== totalCount">
-          Finish Survey
-        </button>
-      </div>
-      <div class="progress-bar-wrapper" v-if="sessionStarted">
-        <div class="progress-bar-fill" :style="{ width: progressPercent + '%' }"></div>
-      </div>
-
-      <div class="question-tracker">
-        <span v-for="(q, i) in questionStatusList" :key="q.index"
-          :class="['tracker', { answered: q.answered, current: q.isCurrent }]" @click="currentIndex = i">
-          {{ q.index }}
-        </span>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
+
 
 <script>
 import axios from "@/api/axios";
@@ -50,6 +54,7 @@ import ConsentDemographics from "../components/answers/ConsentDemographics.vue";
 import MultipleChoiceAnswer from "../components/answers/MultipleChoiceAnswer.vue";
 import RankAnswer from "../components/answers/RankAnswer.vue";
 import SliderAnswer from "../components/answers/SliderAnswer.vue";
+import Results from "./answers/Results.vue";
 
 export default {
   components: {
@@ -57,6 +62,7 @@ export default {
     MultipleChoiceAnswer,
     RankAnswer,
     SliderAnswer,
+    Results,
   },
   data() {
     return {
@@ -65,6 +71,7 @@ export default {
       answers: {},
       currentIndex: 0,
       sessionStarted: false,
+      quizCompleted: false,
     };
   },
   computed: {
@@ -122,7 +129,7 @@ export default {
       if (this.currentIndex === 0) {
         const confirmExit = confirm('Are you sure you want to exit? Unsaved answers may be lost');
         if (confirmExit) {
-          this.sessionStarted =false;
+          this.sessionStarted = false;
         }
       } else {
         this.currentIndex--;
@@ -168,8 +175,7 @@ export default {
           answers: answerArray,
         });
 
-        //placeholder
-        alert("Thank you");
+        this.quizCompleted = true;
       } catch (error) {
         console.error("Failed to submit answers", error);
       }
@@ -225,8 +231,6 @@ export default {
   display: flex;
   margin-top: auto;
   padding-bottom: 5rem;
-  justify-content: space-between;
-  width: 100%;
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -259,20 +263,25 @@ export default {
   justify-content: space-between;
   flex: 1;
   margin-top: 1rem;
-  gap: 0.1rem;
   width: 100%;
   position: absolute;
-  bottom: 8px;
+  bottom: 0;
   left: 0;
+  transition: all 2s;
 }
 
 .tracker {
   flex: 1;
   text-align: center;
   border-right: 1px solid var(--border);
+  border-top: 4px solid darkgray;
   cursor: pointer;
   padding: 2rem 0;
-  transition: background-color 0.2s;
+  transition: border-top-color 0.6s;
+
+  &:last-child {
+    border-right: none;
+  }
 
   &:hover {
     background-color: var(--background);
@@ -350,6 +359,4 @@ export default {
     }
   }
 }
-
-
 </style>
