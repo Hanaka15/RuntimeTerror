@@ -14,7 +14,7 @@
       <input
         id="minValue"
         type="number"
-        v-model="questionData.minValue"
+        v-model="questionData.min"
         placeholder="Enter Min Value"
         @input="emitQuestionChange"
       />
@@ -23,7 +23,7 @@
       <input
         id="maxValue"
         type="number"
-        v-model="questionData.maxValue"
+        v-model="questionData.max"
         placeholder="Enter Max Value"
         @input="emitQuestionChange"
       />
@@ -38,8 +38,8 @@
         required: true,
         default: () => ({
           question: "",
-          minValue: 0,
-          maxValue: 100,
+          min: 0,
+          max: 100,
         }), // Default to an object with slider values
       },
     },

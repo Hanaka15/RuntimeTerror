@@ -121,7 +121,7 @@
 
         delete this.selectedQuestion.choices;
         delete this.selectedQuestion.items;
-        delete this.selectedQuestion.options;
+        delete this.selectedQuestion.items;
         delete this.selectedQuestion.min;
         delete this.selectedQuestion.max;
         delete this.selectedQuestion.minValue;

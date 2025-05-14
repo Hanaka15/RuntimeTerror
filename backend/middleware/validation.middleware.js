@@ -1,5 +1,7 @@
 const { body, validationResult } = require('express-validator');
 
+const types = ['multiple_choice', 'slider', 'rank', 'preference'];
+
 class Validator {
   static validate(validationRules) {
     return [
@@ -38,7 +40,14 @@ class Validator {
   static validateInput() {
     return Validator.validate([
       body('title').notEmpty().withMessage('Title is required'),
-      body('description').notEmpty().withMessage('Description is required')
+      body('description').notEmpty().withMessage('Description is required'),
+      //validate questions and their content 
+      body('questions.*.type')
+        .isIn(types)
+        .withMessage('Invalid question type'),
+      body('questions.*')
+        .notEmpty()
+        .withMessage('Question empty')
     ]);
   }
 }
