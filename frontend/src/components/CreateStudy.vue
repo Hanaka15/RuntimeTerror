@@ -20,6 +20,7 @@
           <option value="multiple_choice">Multiple Choice</option>
           <option value="slider">Slider</option>
           <option value="rank">Rank</option>
+          <option value="file_upload">File Upload</option>
         </select>
       </div>
     </div>
@@ -33,6 +34,7 @@
   import Slider from './questions/Slider.vue';
   import Rank from './questions/Rank.vue';
   import api from '../api/axios';
+  import FileUpload from './questions/fileUpload.vue';
   
   export default {
     components: {
@@ -40,7 +42,8 @@
       StudyInfo,
       MultipleChoice,
       Slider,
-      Rank
+      Rank,
+      FileUpload
     },
     data() {
       return {
@@ -91,7 +94,15 @@
               allowTie: false
             };
             break;
-          
+
+          case 'file_upload':
+            newQuestion = {
+              name: 'New Question',
+              type,
+              question: '',
+            };
+            break;
+
           default:
             newQuestion = {
               name: 'New Question',
@@ -129,6 +140,9 @@
         delete this.selectedQuestion.step;
         delete this.selectedQuestion.defaultValue;
         delete this.selectedQuestion.allowTie;
+        delete this.selectedQuestion.allowedTypes;
+        delete this.selectedQuestion.maxSize;
+        delete this.selectedQuestion.required;
 
         switch (this.selectedQuestion.type) {
           case 'multiple_choice':
@@ -155,6 +169,12 @@
               allowTie: this.selectedQuestion.allowTie ?? false
             });
             break;
+
+          case 'file_upload':
+            Object.assign(this.selectedQuestion, {
+              ...questionBase
+            });
+            break;
         }
 
         this.selectedQuestionComponent = this.getQuestionComponent(this.selectedQuestion.type);
@@ -170,6 +190,8 @@
             return 'Slider';
           case 'rank':
             return 'Rank';
+          case 'file_upload':
+            return 'FileUpload';
           default:
             return null;
         }

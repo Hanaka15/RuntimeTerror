@@ -6,9 +6,16 @@ const BaseQuestionSchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ["multiple_choice", "rank", "preference", "slider"],
+      enum: ["multiple_choice", "rank", "preference", "slider", "file_upload"],
     },
     question: { type: String, required: true, validate: { validator: function(value) { return value !== null; } } },
+    files: [
+      {
+        url: { type: String, required: true },
+        description: { type: String, default: "" },
+        isCorrect: { type: Boolean, default: false }
+      }
+    ],
   },
   { discriminatorKey: "type", _id: true }
 );
@@ -35,6 +42,7 @@ require("./questions/multiple-choice")(Question);
 require("./questions/rank")(Question);
 require("./questions/preference")(Question);
 require("./questions/slider")(Question);
+require("./questions/file-upload")(Question);
 
 const Study = mongoose.model("Study", StudySchema);
 module.exports = Study;

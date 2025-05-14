@@ -26,6 +26,9 @@ app.use(cors({
   credentials: true,
 }));
 
+// === Serve static uploads ===
+app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
+
 // === Session Configuration ===
 if (process.env.NODE_ENV !== "test") {
   app.use(session({
