@@ -11,4 +11,3 @@ router.patch("/:study_id", ensureAuth, StudyController.updateStudy);
 router.delete("/:study_id", ensureAuth, StudyController.deleteStudy);
 
 module.exports = router;
-

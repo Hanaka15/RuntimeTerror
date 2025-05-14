@@ -1,4 +1,3 @@
-// models/study.model.js
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
@@ -7,11 +6,18 @@ const BaseQuestionSchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ["multiple_choice", "rank", "preference", "slider"],
+      enum: ["multiple_choice", "rank", "preference", "slider", "file_upload"],
     },
-    question: { type: String, required: true },
+    question: { type: String, required: true, validate: { validator: function(value) { return value !== null; } } },
+    files: [
+      {
+        url: { type: String, required: true },
+        description: { type: String, default: "" },
+        isCorrect: { type: Boolean, default: false }
+      }
+    ],
   },
-  { discriminatorKey: "type" }
+  { discriminatorKey: "type", _id: true }
 );
 
 const StudySchema = new Schema({
@@ -29,13 +35,15 @@ const StudySchema = new Schema({
   ]
 });
 
-const Study = mongoose.model("Study", StudySchema);
 
-const Question = StudySchema.path("questions").schema;
+const Question = StudySchema.path("questions").$embeddedSchemaType.schema;
 
 require("./questions/multiple-choice")(Question);
 require("./questions/rank")(Question);
 require("./questions/preference")(Question);
 require("./questions/slider")(Question);
+require("./questions/file-upload")(Question);
 
+const Study = mongoose.model("Study", StudySchema);
 module.exports = Study;
+module.exports.QuestionSchema = Question;

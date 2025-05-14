@@ -4,13 +4,14 @@
       <label for="questionText">Question Text</label>
       <input
         id="questionText"
-        v-model="questionData.questionText"
+        v-model="questionData.question"
         placeholder="Enter Question Text"
+        @input="emitQuestionChange"
       />
   
       <h4>Options</h4>
-      <div v-for="(option, index) in questionData.options" :key="index">
-        <input v-model="questionData.options[index]" placeholder="Enter Option" />
+      <div v-for="(item, index) in questionData.items" :key="index">
+        <input v-model="questionData.items[index]" placeholder="Enter Option" @input="emitQuestionChange"/>
       </div>
       <button @click="addOption">Add Option</button>
     </div>
@@ -23,15 +24,22 @@
         type: Object,
         required: true,
         default: () => ({
-          questionText: "",
-          options: [],
+          question: "",
+          items: [],
         }), 
       },
     },
     methods: {
       addOption() {
-        this.questionData.options.push("");
+        if (!this.questionData.items) {
+          this.questionData.items = [];
+        }
+        this.questionData.items.push("");
+        this.emitQuestionChange();
       },
+      emitQuestionChange() {
+        this.$emit('update', this.questionData);
+      }
     },
   };
   </script>

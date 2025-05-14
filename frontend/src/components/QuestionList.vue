@@ -1,8 +1,8 @@
 <template>
     <div>
       <h3>Questions</h3>
-      <div v-for="(question, index) in questions" :key="index" class="question-item" @click="selectQuestion(index)">
-        {{ question.name }}
+      <div v-for="(question, index) in questions" :key="index" class="question-item" :class="{ selected: modelValue === choice }" @click="selectQuestion(index)">
+        {{ question.question || `Question ${index + 1}` }}
       </div>
       <button @click="addQuestion">Add Question</button>
     </div>
@@ -22,16 +22,16 @@
   };
   </script>
   
-  <style scoped>
+  <style lang="scss" scoped>
   .question-item {
     padding: 8px;
     margin: 5px;
     border: 1px solid #ccc;
     cursor: pointer;
-  }
-  
-  .question-item:hover {
-    background-color: #f0f0f0;
+
+    &:hover {
+      background-color: var(--focus);
+    }
   }
   </style>
   
