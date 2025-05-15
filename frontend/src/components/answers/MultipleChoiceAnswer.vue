@@ -1,9 +1,9 @@
 <template>
   <div class="multiple-choice-answer">
     <h3>{{ question.question }}</h3>
-
+    <img v-if="question.image" :src="question.image" alt="Question Image" class="question-image" />
     <div
-      v-for="choice in question.choices"
+      v-for="(choice, index) in question.choices"
       :key="choice"
       class="choice-card"
       :class="{ selected: modelValue === choice }"
