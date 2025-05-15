@@ -7,38 +7,63 @@
     <Results v-if="quizCompleted" />
 
     <template v-else>
-      <ConsentDemographics v-if="!sessionStarted && study" :study="study" :studyId="$route.params.study_id"
-        @session-started="handleSessionStarted" />
+      <ConsentDemographics
+        v-if="!sessionStarted && study"
+        :study="study"
+        :studyId="$route.params.study_id"
+        @session-started="handleSessionStarted"
+      />
 
       <div v-if="study && sessionStarted" class="quiz-container">
         <div class="question-content" v-if="currentQuestion">
-          <MultipleChoiceAnswer v-if="currentQuestion.type === 'multiple_choice'" :question="currentQuestion"
-            :modelValue="answers[currentQuestion._id]" @update:modelValue="handleAnswer" />
+          <MultipleChoiceAnswer
+            v-if="currentQuestion.type === 'multiple_choice'"
+            :question="currentQuestion"
+            :modelValue="answers[currentQuestion._id]"
+            @update:modelValue="handleAnswer"
+          />
 
-          <RankAnswer v-else-if="currentQuestion.type === 'rank'" :key="currentQuestion._id" :question="currentQuestion"
-            :modelValue="answers[currentQuestion._id]" @update:modelValue="handleAnswer" />
+          <RankAnswer
+            v-else-if="currentQuestion.type === 'rank'"
+            :key="currentQuestion._id"
+            :question="currentQuestion"
+            :modelValue="answers[currentQuestion._id]"
+            @update:modelValue="handleAnswer"
+          />
 
-          <SliderAnswer v-else-if="currentQuestion.type === 'slider'" :question="currentQuestion"
-            :modelValue="answers[currentQuestion._id]" @update:modelValue="handleAnswer" />
+          <SliderAnswer
+            v-else-if="currentQuestion.type === 'slider'"
+            :question="currentQuestion"
+            :modelValue="answers[currentQuestion._id]"
+            @update:modelValue="handleAnswer"
+          />
 
           <p v-else>Error loading question</p>
         </div>
 
         <div class="navigation-buttons">
           <button @click="handleExit">
-            {{ currentIndex === 0 ? 'Exit' : 'Previous' }}
+            {{ currentIndex === 0 ? "Exit" : "Previous" }}
           </button>
           <button v-if="currentIndex < totalCount - 1" @click="nextQuestion">
             Next
           </button>
-          <button v-else @click="submitAnswers" :disabled="answeredCount !== totalCount">
+          <button
+            v-else
+            @click="submitAnswers"
+            :disabled="answeredCount !== totalCount"
+          >
             Finish Survey
           </button>
         </div>
 
         <div class="question-tracker">
-          <span v-for="(q, i) in questionStatusList" :key="q.index"
-            :class="['tracker', { answered: q.answered, current: q.isCurrent }]" @click="currentIndex = i">
+          <span
+            v-for="(q, i) in questionStatusList"
+            :key="q.index"
+            :class="['tracker', { answered: q.answered, current: q.isCurrent }]"
+            @click="currentIndex = i"
+          >
             {{ q.index }}
           </span>
         </div>
@@ -46,7 +71,6 @@
     </template>
   </div>
 </template>
-
 
 <script>
 import axios from "@/api/axios";
@@ -91,15 +115,20 @@ export default {
     },
 
     questionStatusList() {
-      return this.study?.questions?.map((q, index) => {
-        const id = q._id;
-        return {
-          index: index + 1,
-          answered: this.answers[id] !== undefined && this.answers[id] !== null && this.answers[id] !== "",
-          isCurrent: this.currentIndex === index,
-        };
-      }) || [];
-    }
+      return (
+        this.study?.questions?.map((q, index) => {
+          const id = q._id;
+          return {
+            index: index + 1,
+            answered:
+              this.answers[id] !== undefined &&
+              this.answers[id] !== null &&
+              this.answers[id] !== "",
+            isCurrent: this.currentIndex === index,
+          };
+        }) || []
+      );
+    },
   },
   methods: {
     async fetchStudy() {
@@ -127,7 +156,9 @@ export default {
 
     handleExit() {
       if (this.currentIndex === 0) {
-        const confirmExit = confirm('Are you sure you want to exit? Unsaved answers may be lost');
+        const confirmExit = confirm(
+          "Are you sure you want to exit? Unsaved answers may be lost"
+        );
         if (confirmExit) {
           this.sessionStarted = false;
         }
@@ -179,8 +210,6 @@ export default {
       } catch (error) {
         console.error("Failed to submit answers", error);
       }
-
-      
     },
   },
   mounted() {
@@ -234,7 +263,6 @@ export default {
   gap: 1rem;
   margin-bottom: 1rem;
 }
-
 
 .progress-bar-wrapper {
   height: 8px;
@@ -331,7 +359,8 @@ export default {
   }
 
   to {
-    transform: translate(-50%, -50%) rotateX(50deg) rotateZ(40deg) translate(-400px);
+    transform: translate(-50%, -50%) rotateX(50deg) rotateZ(40deg)
+      translate(-400px);
   }
 }
 

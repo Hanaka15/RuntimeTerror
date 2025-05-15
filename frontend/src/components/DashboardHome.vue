@@ -31,7 +31,7 @@
               </div>
             </td>
             <td>
-              <button class="edit">
+              <button class="edit" @click="editStudy(study._id)">
                 <font-awesome-icon :icon="['fas', 'pen-to-square']" />
               </button>
             </td>
@@ -65,6 +65,11 @@ export default {
       console.error("Failed to fetch studies:", error);
     }
   },
+  methods: {
+    editStudy(studyId) {
+      this.$router.push({ path: `/dashboard/edit/${studyId}` });
+    }
+  }
 };
 </script>
 

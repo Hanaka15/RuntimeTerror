@@ -2,9 +2,10 @@
   <div class="create-study-container">
     <div class="left-side">
       <QuestionList
+        :questions="study.questions"
+        :modeValue="selectedQuestionIndex"
         @add-question="addQuestion"
         @select-question="selectQuestion"
-        :questions="study.questions"
       />
     </div>
 
@@ -17,7 +18,7 @@
       />
 
       <!-- Question Settings Section -->
-      <div v-if="selectedQuestionIndex !== null && selectedQuestion">
+      <div v-if="selectedQuestion">
         <h3>Question Settings</h3>
         <select v-model="selectedQuestion.type" @change="changeQuestionType">
           <option value="multiple_choice">Multiple Choice</option>
@@ -67,11 +68,27 @@ export default {
         demographics: [],
         questions: [],
       },
+      selectedQuestionIndex: null,
       selectedQuestion: null,
       selectedQuestionComponent: null,
       selectedQuestionData: null,
     };
   },
+
+  async mounted() {
+    const studyId = this.$route.params.study_id;
+    if (studyId) {
+      try {
+        const response = await api.get(`/studies/${studyId}`);
+        this.study = response.data;
+        this.study.id = response.data._id; // normalize the id key
+      } catch (error) {
+        console.error('Failed to load study for editing:', error);
+        alert('Could not load study for editing.');
+      }
+    }
+  },
+
   methods: {
     // Add a new question
     addQuestion(type = "multiple_choice") {
@@ -132,13 +149,10 @@ export default {
 
     // Select a question and set it as the active one to edit
     selectQuestion(index) {
+      this.selectedQuestionIndex = index;
       this.selectedQuestion = this.study.questions[index];
-      this.selectedQuestionComponent = this.getQuestionComponent(
-        this.selectedQuestion.type
-      );
-      this.selectedQuestionData = JSON.parse(
-        JSON.stringify(this.selectedQuestion)
-      ); // Deep copy of selected question data
+      this.selectedQuestionComponent = this.getQuestionComponent(this.selectedQuestion.type);
+      this.selectedQuestionData =  JSON.parse(JSON.stringify(this.selectedQuestion)); // Deep copy of selected question data
     },
 
     // Change the type of the selected question and update the component
@@ -156,6 +170,7 @@ export default {
       delete this.selectedQuestion.step;
       delete this.selectedQuestion.defaultValue;
       delete this.selectedQuestion.allowTie;
+      delete this.selectedQuestion.pairs;
 
       switch (this.selectedQuestion.type) {
         case "multiple_choice":
@@ -165,33 +180,34 @@ export default {
           });
           break;
 
-        case "slider":
+          case "slider":
           Object.assign(this.selectedQuestion, {
             ...questionBase,
             min: this.selectedQuestion.min ?? 0,
             max: this.selectedQuestion.max ?? 100,
             step: this.selectedQuestion.step ?? 1,
-            defaultValue:
-              this.selectedQuestion.defaultValue ??
-              (this.selectedQuestion.min + this.selectedQuestion.max) / 2,
-          });
+            defaultValue: this.selectedQuestion.defaultValue ?? ((this.selectedQuestion.min + this.selectedQuestion.max) / 2)
+          }); 
           break;
 
-        case "rank":
+          case "rank":
           Object.assign(this.selectedQuestion, {
             ...questionBase,
             items: this.selectedQuestion.items || ["Artifact 1", "Artifact 2"],
             allowTie: this.selectedQuestion.allowTie ?? false,
           });
           break;
+
+          case "preference":
+            Object.assign(this.selectedQuestion, {
+              ...questionBase,
+              pairs: this.selectedQuestion.pairs || [{ left: 'Left', right: 'Right'}],
+            });
+          break;
       }
 
-      this.selectedQuestionComponent = this.getQuestionComponent(
-        this.selectedQuestion.type
-      );
-      this.selectedQuestionData = JSON.parse(
-        JSON.stringify(this.selectedQuestion)
-      );
+      this.selectedQuestionComponent = this.getQuestionComponent(this.selectedQuestion.type);
+      this.selectedQuestionData = JSON.parse(JSON.stringify(this.selectedQuestion));
     },
 
     // Determine the appropriate question component based on the type
@@ -217,34 +233,27 @@ export default {
         if (!newStudyInfo.id) {
           //newStudyInfo.id = this.study.id;
           newStudyInfo.published = false;
-
-          console.log(
-            "Submitting study:",
-            JSON.stringify(newStudyInfo, null, 2)
-          );
-
-          const response = await api.post("/studies", newStudyInfo);
-
+          
+          console.log('Submitting study:', JSON.stringify(newStudyInfo, null, 2));
+          
+          const response = await api.post('/studies', newStudyInfo);
+          
           this.study = response.data.study;
           newStudyInfo.id = response.data.study._id;
           this.study.id = response.data.study._id;
-          alert("study saved as draft");
+          alert('study saved as draft');
+
         } else {
-          console.log("Updating study:", JSON.stringify(newStudyInfo, null, 2));
-          const response = await api.patch(
-            `/studies/${newStudyInfo.id}`,
-            newStudyInfo
-          );
+          console.log('Updating study:', JSON.stringify(newStudyInfo, null, 2));
+          const response = await api.patch(`/studies/${newStudyInfo.id}`, newStudyInfo);
 
           this.study = response.data.study;
           this.study.id = response.data.study._id;
-          alert("study updated successfully");
+          alert('study updated successfully');
         }
       } catch (error) {
-        console.error("Error saving: ", error);
-        alert(
-          "Save failed: " + (error.response?.data?.message || error.message)
-        );
+        console.error('Error saving: ', error);
+        alert('Save failed: ' + (error.response?.data?.message || error.message));
       }
     },
 
@@ -252,6 +261,11 @@ export default {
     updateQuestionData(updatedData) {
       console.log("Updated Data Received in Parent:", updatedData);
       Object.assign(this.selectedQuestion, updatedData); // maintains Vue reactivity
+
+      const index = this.selectedQuestionIndex;
+      if (index !== -1) {
+        this.study.questions.splice(index, 1, { ...this.selectedQuestion });
+      }
     },
   },
 };

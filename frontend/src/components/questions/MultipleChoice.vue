@@ -16,7 +16,8 @@
 
     <h4>Choices</h4>
     <div v-for="(choice, index) in questionData.choices" :key="index">
-      <input v-model="questionData.choices[index]" placeholder="Enter Choice" />
+      <input v-model="questionData.choices[index]" placeholder="Enter Choice" @input="emitQuestionChange" />
+      <!--In my case it won't update the choices fields if they've been changed if i don't include the @input="emitQuestionChange" here-->
     </div>
     <button @click="addChoice">Add Choice</button>
   </div>
