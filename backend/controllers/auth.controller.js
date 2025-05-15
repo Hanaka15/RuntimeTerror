@@ -52,10 +52,10 @@ class AuthController {
       if (err) return next(err);
       if (!user) return res.status(401).json({ error: info.message || 'Login failed' });
 
-      req.logIn(user, (err) => {
+      req.login(user, (err) => {
         if (err) return next(err);
-        const { id, username, email } = user;
-        return res.status(200).json({ message: "Login successful", researcher: { id, username, email } });
+        const { id, username, email, avatar } = user;
+        return res.status(200).json({ message: "Login successful", researcher: { id, username, email, avatar } });
       });
     })(req, res, next);
   }
@@ -83,7 +83,7 @@ class AuthController {
       if (err) return next(err);
       if (!user) return res.redirect('/auth/login-failed');
 
-      req.logIn(user, (err) => {
+      req.login(user, (err) => {
         if (err) return next(err);
         return res.redirect('/user/me');
       });

@@ -5,10 +5,9 @@ const ResearcherSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   avatar: { type: String },
-  collaborators: [
+    collaborations: [
     {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-      role: { type: String, enum: ['viewer', 'editor', 'admin'], default: 'viewer' }
+      study: { type: mongoose.Schema.Types.ObjectId, ref: 'Study', required: true }
     }
   ],
   googleId:  String,
@@ -16,7 +15,7 @@ const ResearcherSchema = new mongoose.Schema({
 });
 
 ResearcherSchema.pre('save', async function (next) {
-  if (!this.avatar && this.username) {
+  if (!this.avatar) {
     const seed = encodeURIComponent(this.username);
     this.avatar = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}`;
   }
