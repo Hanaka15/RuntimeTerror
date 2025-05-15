@@ -17,7 +17,7 @@
       />
 
       <!-- Question Settings Section -->
-      <div v-if="selectedQuestion">
+      <div v-if="selectedQuestionIndex !== null && selectedQuestion">
         <h3>Question Settings</h3>
         <select v-model="selectedQuestion.type" @change="changeQuestionType">
           <option value="multiple_choice">Multiple Choice</option>
@@ -73,21 +73,6 @@ export default {
     };
   },
   methods: {
-    //santize studyData
-    sanitizeStudyData(rawStudy) {
-      const cleanStudy = JSON.parse(JSON.stringify(rawStudy));
-      cleanStudy.questions.forEach((question) => {
-        if (question.files && Array.isArray(question.files)) {
-          question.files = question.files.map((f) => ({
-            name: f.name,
-            path: f.path,
-            description: f.description || "",
-            isCorrect: f.isCorrect || false,
-          }));
-        }
-      });
-      return cleanStudy;
-    },
     // Add a new question
     addQuestion(type = "multiple_choice") {
       let newQuestion;
@@ -228,23 +213,27 @@ export default {
     //Update/save study info
     async updateStudy(newStudyInfo) {
       try {
-        const sanitized = this.sanitizeStudyData(newStudyInfo);
+        // if there's no id, it's a new study, save it as draft
+        if (!newStudyInfo.id) {
+          //newStudyInfo.id = this.study.id;
+          newStudyInfo.published = false;
 
-        if (!sanitized.id) {
-          sanitized.published = false;
+          console.log(
+            "Submitting study:",
+            JSON.stringify(newStudyInfo, null, 2)
+          );
 
-          console.log("Submitting study:", JSON.stringify(sanitized, null, 2));
-          const response = await api.post("/studies", sanitized);
+          const response = await api.post("/studies", newStudyInfo);
 
           this.study = response.data.study;
           newStudyInfo.id = response.data.study._id;
           this.study.id = response.data.study._id;
           alert("study saved as draft");
         } else {
-          console.log("Updating study:", JSON.stringify(sanitized, null, 2));
+          console.log("Updating study:", JSON.stringify(newStudyInfo, null, 2));
           const response = await api.patch(
-            `/studies/${sanitized.id}`,
-            sanitized
+            `/studies/${newStudyInfo.id}`,
+            newStudyInfo
           );
 
           this.study = response.data.study;

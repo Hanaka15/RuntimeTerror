@@ -14,30 +14,11 @@
       @update="emitQuestionChange"
     ></Fileupload>
 
-    <div class="choices-wrapper">
-      <div class="header-wrapper">
-        <h4>Choices</h4>
-      </div>
-
-      <div
-        v-for="(choice, index) in questionData.choices"
-        :key="index"
-        class="alternative-wrapper"
-      >
-        <input v-model="choice.text" placeholder="Enter Choice" />
-        <label
-          ><input
-            type="radio"
-            name="correctAnswer"
-            :checked="choice.isCorrect"
-            @change="setCorrect(index)"
-          />
-          <span style="opacity: 0.6; font-size: small">correct?</span>
-        </label>
-      </div>
-
-      <button @click="addChoice">Add Choice</button>
+    <h4>Choices</h4>
+    <div v-for="(choice, index) in questionData.choices" :key="index">
+      <input v-model="questionData.choices[index]" placeholder="Enter Choice" />
     </div>
+    <button @click="addChoice">Add Choice</button>
   </div>
 </template>
 
@@ -60,28 +41,11 @@ export default {
   },
   methods: {
     addChoice() {
-      this.questionData.choices.push({ text: "", isCorrect: false });
+      this.questionData.choices.push("");
     },
-
-    setCorrect(index) {
-      this.questionData.choices.forEach((choice, i) => {
-        choice.isCorrect = i === index;
-      });
-      this.emitQuestionChange();
-    },
-
     emitQuestionChange() {
       this.$emit("update", this.questionData);
     },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.alternative-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-}
-</style>

@@ -19,7 +19,7 @@ app.use(express.json());
 
 app.use(cors({
   origin: [process.env.CLIENT_URL, "http://localhost:5173"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 }));
@@ -42,6 +42,10 @@ app.use(session({
   }
 }));
 
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 // === Passport ===
 app.use(passport.initialize());
 app.use(passport.session());
@@ -50,6 +54,7 @@ app.use(passport.session());
 app.use("/auth", require("./routes/auth.routes"));
 app.use("/studies", require("./routes/study.routes"));
 app.use("/sessions", require("./routes/participant.routes"));
+app.use("/upload", require("./routes/upload.routes"));
 
 // === Global Error Handler ===
 app.use((err, req, res, next) => {

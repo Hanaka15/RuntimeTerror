@@ -3,38 +3,43 @@
     <input
       type="file"
       @change="handleFileChange"
-      :accept="accept"
-      :multiple="multiple"
+      :accept="allowedTypes"
+      multiple
     />
 
-    <div v-if="files.length" class="file-list">
-      <div v-for="(file, idx) in files" :key="file.name" class="file-block">
+    <div
+      v-if="questionData.files && questionData.files.length"
+      class="file-list"
+    >
+      <div
+        v-for="(file, idx) in questionData.files"
+        :key="file.name"
+        class="file-block"
+      >
         <div v-if="isImage(file)">
           <img :src="file.preview" style="max-width: 200px; margin: 10px 0" />
         </div>
         <div v-else>
           <span>{{ file.name }}</span>
         </div>
-
         <input v-model="file.description" placeholder="File description" />
-
-        <label v-if="allowCorrect">
+        <label>
           <input type="checkbox" v-model="file.isCorrect" />
-          Mark as correct
+          Mark as correct answer
         </label>
-
         <button @click="removeFile(idx)">Remove</button>
       </div>
     </div>
-
-    <div v-if="required && files.length < minFiles" style="color: red">
-      Please upload at least {{ minFiles }} files.
+    <div
+      v-if="questionData.files && questionData.files.length < 2"
+      style="color: red"
+    >
+      Please upload at least 2 files.
     </div>
   </div>
 </template>
 
 <script>
-import axios from "@/api/axios";
 export default {
   name: "FileUpload",
   props: {
@@ -59,39 +64,32 @@ export default {
     },
   },
   methods: {
-    async handleFileChange(event) {
-      const incoming = Array.from(event.target.files);
-      const formData = new FormData();
+    handleFileChange(event) {
+      const files = Array.from(event.target.files);
+      const newFiles = files.map((file) => ({
+        file,
+        name: file.name,
+        preview: /\.(jpg|jpeg|png)$/i.test(file.name)
+          ? URL.createObjectURL(file)
+          : null,
+        description: "",
+        isCorrect: false,
+      }));
+      if (!this.questionData.files) this.questionData.files = [];
+      this.questionData.files = [...this.questionData.files, ...newFiles];
 
-      incoming.forEach((file) => {
-        formData.append("files", file);
-      });
-
-      try {
-        const res = await axios.post("/uploads/multiple", formData, {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        const uploaded = res.data.files.map((file) => ({
-          name: file.filename,
-          path: file.path,
-          description: "",
-          isCorrect: false,
-        }));
-
-        this.files.push(...uploaded);
-        this.$emit("update:modelValue", this.files);
-        event.target.value = "";
-      } catch (err) {
-        console.error("Upload failed", err);
-        alert("Upload failed: " + (err.response?.data?.message || err.message));
-      }
+      this.$emit("update", this.questionData);
+      event.target.value = "";
     },
     removeFile(idx) {
-      const file = this.files[idx];
+      const file = this.questionData.files[idx];
       if (file.preview) URL.revokeObjectURL(file.preview);
-      this.files.splice(idx, 1);
+      this.questionData.files.splice(idx, 1);
+      this.questionData.files = [...this.questionData.files];
+      this.$emit("update", this.questionData);
+    },
+    isImage(file) {
+      return /\.(jpg|jpeg|png)$/i.test(file.name);
     },
   },
 };
