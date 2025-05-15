@@ -151,12 +151,8 @@ export default {
     selectQuestion(index) {
       this.selectedQuestionIndex = index;
       this.selectedQuestion = this.study.questions[index];
-      this.selectedQuestionComponent = this.getQuestionComponent(
-        this.selectedQuestion.type
-      );
-      this.selectedQuestionData = JSON.parse(
-        JSON.stringify(this.selectedQuestion)
-      ); // Deep copy of selected question data
+      this.selectedQuestionComponent = this.getQuestionComponent(this.selectedQuestion.type);
+      this.selectedQuestionData =  JSON.parse(JSON.stringify(this.selectedQuestion)); // Deep copy of selected question data
     },
 
     // Change the type of the selected question and update the component
@@ -184,19 +180,17 @@ export default {
           });
           break;
 
-        case "slider":
+          case "slider":
           Object.assign(this.selectedQuestion, {
             ...questionBase,
             min: this.selectedQuestion.min ?? 0,
             max: this.selectedQuestion.max ?? 100,
             step: this.selectedQuestion.step ?? 1,
-            defaultValue:
-              this.selectedQuestion.defaultValue ??
-              (this.selectedQuestion.min + this.selectedQuestion.max) / 2,
-          });
+            defaultValue: this.selectedQuestion.defaultValue ?? ((this.selectedQuestion.min + this.selectedQuestion.max) / 2)
+          }); 
           break;
 
-        case "rank":
+          case "rank":
           Object.assign(this.selectedQuestion, {
             ...questionBase,
             items: this.selectedQuestion.items || ["Artifact 1", "Artifact 2"],
@@ -204,22 +198,16 @@ export default {
           });
           break;
 
-        case "preference":
-          Object.assign(this.selectedQuestion, {
-            ...questionBase,
-            pairs: this.selectedQuestion.pairs || [
-              { left: "Left", right: "Right" },
-            ],
-          });
+          case "preference":
+            Object.assign(this.selectedQuestion, {
+              ...questionBase,
+              pairs: this.selectedQuestion.pairs || [{ left: 'Left', right: 'Right'}],
+            });
           break;
       }
 
-      this.selectedQuestionComponent = this.getQuestionComponent(
-        this.selectedQuestion.type
-      );
-      this.selectedQuestionData = JSON.parse(
-        JSON.stringify(this.selectedQuestion)
-      );
+      this.selectedQuestionComponent = this.getQuestionComponent(this.selectedQuestion.type);
+      this.selectedQuestionData = JSON.parse(JSON.stringify(this.selectedQuestion));
     },
 
     // Determine the appropriate question component based on the type
@@ -245,34 +233,27 @@ export default {
         if (!newStudyInfo.id) {
           //newStudyInfo.id = this.study.id;
           newStudyInfo.published = false;
-
-          console.log(
-            "Submitting study:",
-            JSON.stringify(newStudyInfo, null, 2)
-          );
-
-          const response = await api.post("/studies", newStudyInfo);
-
+          
+          console.log('Submitting study:', JSON.stringify(newStudyInfo, null, 2));
+          
+          const response = await api.post('/studies', newStudyInfo);
+          
           this.study = response.data.study;
           newStudyInfo.id = response.data.study._id;
           this.study.id = response.data.study._id;
-          alert("study saved as draft");
+          alert('study saved as draft');
+
         } else {
-          console.log("Updating study:", JSON.stringify(newStudyInfo, null, 2));
-          const response = await api.patch(
-            `/studies/${newStudyInfo.id}`,
-            newStudyInfo
-          );
+          console.log('Updating study:', JSON.stringify(newStudyInfo, null, 2));
+          const response = await api.patch(`/studies/${newStudyInfo.id}`, newStudyInfo);
 
           this.study = response.data.study;
           this.study.id = response.data.study._id;
-          alert("study updated successfully");
+          alert('study updated successfully');
         }
       } catch (error) {
-        console.error("Error saving: ", error);
-        alert(
-          "Save failed: " + (error.response?.data?.message || error.message)
-        );
+        console.error('Error saving: ', error);
+        alert('Save failed: ' + (error.response?.data?.message || error.message));
       }
     },
 
