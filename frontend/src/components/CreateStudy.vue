@@ -67,6 +67,21 @@ export default {
       selectedQuestionData: null,
     };
   },
+
+  async mounted() {
+    const studyId = this.$route.params.study_id;
+    if (studyId) {
+      try {
+        const response = await api.get(`/studies/${studyId}`);
+        this.study = response.data;
+        this.study.id = response.data._id; // normalize the id key
+      } catch (error) {
+        console.error('Failed to load study for editing:', error);
+        alert('Could not load study for editing.');
+      }
+    }
+  },
+
   methods: {
     // Add a new question
     addQuestion(type = 'multiple_choice') {
