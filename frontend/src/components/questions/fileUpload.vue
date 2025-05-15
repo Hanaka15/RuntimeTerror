@@ -1,69 +1,100 @@
 <template>
-    <div>
-      <input type="file" @change="handleFileChange" :accept="allowedTypes" multiple />
-  
-      <div v-if="questionData.files && questionData.files.length" class="file-list">
-        <div v-for="(file, idx) in questionData.files" :key="file.name" class="file-block">
-          <div v-if="isImage(file)">
-            <img :src="file.preview" style="max-width: 200px; margin: 10px 0;" />
-          </div>
-          <div v-else>
-            <span>{{ file.name }}</span>
-          </div>
-          <input v-model="file.description" placeholder="File description" />
-          <label>
-            <input type="checkbox" v-model="file.isCorrect" />
-            Mark as correct answer
-          </label>
-          <button @click="removeFile(idx)">Remove</button>
+  <div>
+    <input
+      type="file"
+      @change="handleFileChange"
+      :accept="accept"
+      :multiple="multiple"
+    />
+
+    <div v-if="files.length" class="file-list">
+      <div v-for="(file, idx) in files" :key="file.name" class="file-block">
+        <div v-if="isImage(file)">
+          <img :src="file.preview" style="max-width: 200px; margin: 10px 0" />
         </div>
-      </div>
-      <div v-if="questionData.files && questionData.files.length < 2" style="color: red;">
-        Please upload at least 2 files.
+        <div v-else>
+          <span>{{ file.name }}</span>
+        </div>
+
+        <input v-model="file.description" placeholder="File description" />
+
+        <label v-if="allowCorrect">
+          <input type="checkbox" v-model="file.isCorrect" />
+          Mark as correct
+        </label>
+
+        <button @click="removeFile(idx)">Remove</button>
       </div>
     </div>
-  </template>
+
+    <div v-if="required && files.length < minFiles" style="color: red">
+      Please upload at least {{ minFiles }} files.
+    </div>
+  </div>
+</template>
 
 <script>
+import axios from "@/api/axios";
 export default {
+  name: "FileUpload",
   props: {
-    questionData: { type: Object, required: true }
+    modelValue: { type: Array, default: () => [] },
+    accept: { type: String, default: ".jpg,.jpeg,.png,.pdf,.doc,.docx" },
+    multiple: { type: Boolean, default: true },
+    required: { type: Boolean, default: false },
+    minFiles: { type: Number, default: 2 },
+    allowCorrect: { type: Boolean, default: true },
   },
   data() {
     return {
-      allowedTypes: '.jpg,.jpeg,.png,.pdf,.doc,.docx'
-    }
+      files: this.modelValue || [],
+    };
+  },
+  watch: {
+    files: {
+      handler() {
+        this.$emit("update:modelValue", this.files);
+      },
+      deep: true,
+    },
   },
   methods: {
-    handleFileChange(event) {
-  const files = Array.from(event.target.files);
-  const newFiles = files.map(file => ({
-    file,
-    name: file.name,
-    preview: /\.(jpg|jpeg|png)$/i.test(file.name) ? URL.createObjectURL(file) : null,
-    description: '',
-    isCorrect: false
-  }));
-  if (!this.questionData.files) this.questionData.files = [];
-  this.questionData.files = [...this.questionData.files, ...newFiles];
+    async handleFileChange(event) {
+      const incoming = Array.from(event.target.files);
+      const formData = new FormData();
 
+      incoming.forEach((file) => {
+        formData.append("files", file);
+      });
 
+      try {
+        const res = await axios.post("/uploads/multiple", formData, {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
-  this.$emit('update', this.questionData);
-  event.target.value = '';
-},
-    removeFile(idx) {
-      const file = this.questionData.files[idx];
-      if (file.preview) URL.revokeObjectURL(file.preview);
-      this.questionData.files.splice(idx, 1);
-      this.questionData.files = [...this.questionData.files];
-      this.$emit('update', this.questionData);
+        const uploaded = res.data.files.map((file) => ({
+          name: file.filename,
+          path: file.path,
+          description: "",
+          isCorrect: false,
+        }));
+
+        this.files.push(...uploaded);
+        this.$emit("update:modelValue", this.files);
+        event.target.value = "";
+      } catch (err) {
+        console.error("Upload failed", err);
+        alert("Upload failed: " + (err.response?.data?.message || err.message));
+      }
     },
-    isImage(file) {
-      return /\.(jpg|jpeg|png)$/i.test(file.name);
-    }
-  }
-}
+    removeFile(idx) {
+      const file = this.files[idx];
+      if (file.preview) URL.revokeObjectURL(file.preview);
+      this.files.splice(idx, 1);
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -74,13 +105,11 @@ export default {
   padding: 10px;
   margin-bottom: 10px;
 }
-
 .file-list {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
 }
-
 .file-block input[placeholder="File description"] {
   width: 100%;
   box-sizing: border-box;
