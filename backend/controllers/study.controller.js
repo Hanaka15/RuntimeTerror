@@ -8,62 +8,106 @@ const sendErrorResponse = (res, status, message, error) => {
 };
 
 class StudyController {
-  static async findStudyById(studyId) {
-    const study = await Study.findById(studyId);
-    if (!study) {
-      throw new Error("Study not found");
+  // Helper: parse config field safely
+  static parseConfig(config) {
+    if (typeof config !== 'string') return config || {};
+    try {
+      return JSON.parse(config);
+    } catch {
+      return {};
     }
-    return study;
+  }
+
+  // Helper: attach uploaded files to questions
+  static attachFilesToQuestions(questions, files) {
+    if (!files || files.length === 0) return questions;
+
+    files.forEach(file => {
+      const match = file.fieldname.match(/^questions\[(\d+)\]\[files\]\[(\d+)\]$/);
+      if (!match) return;
+
+      const questionIndex = parseInt(match[1], 10);
+      if (!questions[questionIndex]) return;
+
+      if (!Array.isArray(questions[questionIndex].files)) {
+        questions[questionIndex].files = [];
+      }
+
+      questions[questionIndex].files.push({
+        filename: file.filename,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        path: file.path,
+        size: file.size,
+      });
+    });
+
+    return questions;
   }
 
   static async createStudy(req, res) {
     try {
-      const { name, questions, consent, demographics, published } = req.body;
+      console.log("Received createStudy request body:", req.body);
+      console.log("Received createStudy request files:", req.files);
 
-      //  const allowedTypes = Object.keys(QuestionSchema.discriminators || {});
+      const { title, description, consent, demographics, published } = req.body;
 
-      /*       const normalizeQuestionFields = (q) => {
-              const normalized = { ...q };
-      
-              if (q.type === "slider") {
-                if (q.minValue !== undefined) normalized.min = q.minValue;
-                if (q.maxValue !== undefined) normalized.max = q.maxValue;
-                delete normalized.minValue;
-                delete normalized.maxValue;
-              }
-      
-              if (q.type === "rank") {
-                if (q.items !== undefined) normalized.items = q.items;
-                delete normalized.items;
-              }
-      
-              return normalized;
-            } */
+      const rawQuestions = req.body.questions || [];
+      const questions = Array.isArray(rawQuestions) ? rawQuestions : Object.values(rawQuestions);
 
-      /*       const castedQuestions = questions.map((q) => {
-              if (!allowedTypes.includes(q.type)) {
-                throw new Error(`Unknown question type: ${q.type}`);
-              }
-      
-              const normalized = normalizeQuestionFields(q);
-              return new QuestionSchema.discriminators[q.type](normalized);
-            }); */
+      const parsedQuestions = questions.map((q) => {
+        let config = {};
 
-      const newStudy = await Study.create({
-        name,
-        ownerId: req.user.id,
-        consent,
-        demographics,
-        questions,
-        published: published || false,
+        try {
+          config = typeof q.config === "string" ? JSON.parse(q.config) : q.config;
+        } catch (e) {
+          console.warn("Invalid JSON in question config:", q.config);
+        }
+
+        return {
+          type: q.type,
+          question: q.question || "Untitled question",
+          config,
+          files: [],
+        };
       });
 
-      res.status(201).json({ message: "Study created successfully", study: newStudy });
-    } catch (error) {
-      if (error.name === "ValidationError") {
-        return res.status(400).json({ message: "Validation Error", error: error.message });
+      // Attach files to questions
+      if (req.files && Array.isArray(req.files)) {
+        req.files.forEach((file) => {
+          const match = file.fieldname.match(/^questions\[(\d+)\]\[files\]\[\d+\]$/);
+          if (match) {
+            const questionIndex = parseInt(match[1], 10);
+            if (parsedQuestions[questionIndex]) {
+              parsedQuestions[questionIndex].files.push({
+                url: `/uploads/${file.filename}`,
+                description: "", // Can be extended later
+              });
+            }
+          }
+        });
       }
-      sendErrorResponse(res, 500, "Study Creation Error:", error);
+
+      const newStudy = await Study.create({
+        ownerId: req.user.id,
+        title,
+        description,
+        consent,
+        demographics: demographics ? JSON.parse(demographics) : {},
+        published: published === "true" || published === true,
+        questions: parsedQuestions,
+      });
+
+      return res.status(201).json({
+        message: "Study created successfully",
+        study: newStudy,
+      });
+    } catch (error) {
+      console.error("Study creation failed:", error);
+      return res.status(500).json({
+        message: "Failed to create study",
+        error: error.message,
+      });
     }
   }
 
@@ -102,13 +146,9 @@ class StudyController {
       const { study_id } = req.params;
       const study = await StudyController.findStudyById(study_id);
 
-      const { name, questions, consent, demographics, published } = req.body;
+      const { title, questions, consent, demographics, published } = req.body;
 
-      // Update entire study fields
-/*       const { studyname } = req.body;
-      if (studyname) study.name = studyname;
-      //if (questions) study.questions = questions;  */
-      if (name) study.name = name;
+      if (title) study.title = title;
       if (questions) study.questions = questions;
       if (consent) study.consent = consent;
       if (demographics) study.demographics = demographics;

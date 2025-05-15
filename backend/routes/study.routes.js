@@ -1,10 +1,10 @@
 const express = require("express");
 const StudyController = require("../controllers/study.controller");
 const { ensureAuth } = require("../middleware/auth.middleware");
-
+const upload = require("../middleware/multer.middleware");
 const router = express.Router();
 
-router.post("/", ensureAuth, StudyController.createStudy);
+router.post("/", upload.any(), ensureAuth, StudyController.createStudy);
 router.get("/", ensureAuth, StudyController.getStudies);
 router.get("/:study_id", ensureAuth, StudyController.getStudyById);
 router.patch("/:study_id", ensureAuth, StudyController.updateStudy);

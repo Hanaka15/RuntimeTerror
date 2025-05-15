@@ -8,7 +8,7 @@ import Dashboard from '../pages/Dashboard.vue';
 import AnswerQuiz from '../components/AnswerStudy.vue';
 import DashboardHome from '../components/DashboardHome.vue';
 import ProfileSettings from '../components/ProfileSettings.vue';
-import CreateStudy from '../components/CreateStudy.vue';
+import StudyBuilder from '../components/StudyBuilder.vue';
 
 const routes = [
   { path: '/login', name: 'Login', component: Login },
@@ -29,13 +29,13 @@ const routes = [
       },
       {
         path: 'create',
-        name: 'CreateStudy',
-        component: CreateStudy,
+        name: 'StudyBuilder',
+        component: StudyBuilder,
       },
       {
         path: 'edit/:study_id',
         name: 'EditStudy',
-        component: CreateStudy,
+        component: StudyBuilder,
         meta: { requiresAuth: true },
       },
     ], 
