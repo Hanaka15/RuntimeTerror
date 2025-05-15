@@ -191,34 +191,29 @@
 
       //Update/save study info
       async updateStudy(newStudyInfo) {
-        try {
-          // if there's no id, it's a new study, save it as draft
-          if (!newStudyInfo.id) {
-            //newStudyInfo.id = this.study.id;
-            newStudyInfo.published = false;
-            
-            console.log('Submitting study:', JSON.stringify(newStudyInfo, null, 2));
-            
-            const response = await api.post('/studies', newStudyInfo);
-            
-            this.study = response.data.study;
-            newStudyInfo.id = response.data.study._id;
-            this.study.id = response.data.study._id;
-            alert('study saved as draft');
-
-          } else {
-            console.log('Updating study:', JSON.stringify(newStudyInfo, null, 2));
-            const response = await api.patch(`/studies/${newStudyInfo.id}`, newStudyInfo);
-
-            this.study = response.data.study;
-            this.study.id = response.data.study._id;
-            alert('study updated successfully');
-          }
-        } catch (error) {
-          console.error('Error saving: ', error);
-          alert('Save failed: ' + (error.response?.data?.message || error.message));
-        }
-      },
+  try {
+    let response;
+    if (!newStudyInfo.id) {
+      // New study, POST
+      newStudyInfo.published = false;
+      response = await api.post('/studies', newStudyInfo);
+    } else {
+      // Existing study, PATCH
+      response = await api.patch(`/studies/${newStudyInfo.id}`, newStudyInfo);
+    }
+    // Always update the local study object with the backend response
+    this.study = response.data.study;
+    this.study.id = response.data.study._id; // Defensive, in case _id is used
+    if (this.study.published) {
+      alert('Study published successfully! The link is now available.');
+    } else {
+      alert('Study saved as draft');
+    }
+  } catch (error) {
+    console.error('Error saving: ', error);
+    alert('Save failed: ' + (error.response?.data?.message || error.message));
+  }
+},
   
       // Update question data after any change within the question component
       updateQuestionData(updatedData) {
