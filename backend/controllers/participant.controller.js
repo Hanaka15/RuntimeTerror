@@ -7,6 +7,33 @@ const sendErrorResponse = (res, status, message, error) => {
 };
 
 class ParticipantController {
+
+    static async createParticipants(req, res) {
+        try {
+            const { emails, studyId } = req.body;
+            const study = await Study.findById(studyId);
+            if (!study) {
+                return res.status(404).json({ message: "Study not found" });
+            }
+            const participants = await Participant.insertMany(
+                emails.map(email => ({
+                    studyId,
+                    email,
+                    totalQuestions: study.questions.length,
+                    demographics: {},
+                    answers: [],
+                }))
+            );
+
+            res.status(201).json({
+                message: "Participants created successfully",
+                participants,
+            });
+        } catch (error) {
+            sendErrorResponse(res, 500, "Error creating participants:", error);
+        }
+    }
+
     static async findParticipantById(sessionId) {
         const participant = await Participant.findById(sessionId);
         if (!participant) {
