@@ -2,9 +2,10 @@
   <div class="create-study-container">
     <div class="left-side">
       <QuestionList
+        :questions="study.questions"
+        :modeValue="selectedQuestionIndex"
         @add-question="addQuestion"
         @select-question="selectQuestion"
-        :questions="study.questions"
       />
     </div>
 
@@ -17,7 +18,7 @@
       />
 
       <!-- Question Settings Section -->
-      <div v-if="selectedQuestionIndex !== null && selectedQuestion">
+      <div v-if="selectedQuestion">
         <h3>Question Settings</h3>
         <select v-model="selectedQuestion.type" @change="changeQuestionType">
           <option value="multiple_choice">Multiple Choice</option>
@@ -67,6 +68,7 @@ export default {
         demographics: [],
         questions: [],
       },
+      selectedQuestionIndex: null,
       selectedQuestion: null,
       selectedQuestionComponent: null,
       selectedQuestionData: null,
@@ -132,6 +134,7 @@ export default {
 
     // Select a question and set it as the active one to edit
     selectQuestion(index) {
+      this.selectedQuestionIndex = index;
       this.selectedQuestion = this.study.questions[index];
       this.selectedQuestionComponent = this.getQuestionComponent(
         this.selectedQuestion.type
@@ -156,6 +159,7 @@ export default {
       delete this.selectedQuestion.step;
       delete this.selectedQuestion.defaultValue;
       delete this.selectedQuestion.allowTie;
+      delete this.selectedQuestion.pairs;
 
       switch (this.selectedQuestion.type) {
         case "multiple_choice":
@@ -182,6 +186,15 @@ export default {
             ...questionBase,
             items: this.selectedQuestion.items || ["Artifact 1", "Artifact 2"],
             allowTie: this.selectedQuestion.allowTie ?? false,
+          });
+          break;
+
+        case "preference":
+          Object.assign(this.selectedQuestion, {
+            ...questionBase,
+            pairs: this.selectedQuestion.pairs || [
+              { left: "Left", right: "Right" },
+            ],
           });
           break;
       }
@@ -252,6 +265,11 @@ export default {
     updateQuestionData(updatedData) {
       console.log("Updated Data Received in Parent:", updatedData);
       Object.assign(this.selectedQuestion, updatedData); // maintains Vue reactivity
+
+      const index = this.selectedQuestionIndex;
+      if (index !== -1) {
+        this.study.questions.splice(index, 1, { ...this.selectedQuestion });
+      }
     },
   },
 };
