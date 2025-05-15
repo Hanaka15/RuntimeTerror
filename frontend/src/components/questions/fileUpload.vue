@@ -43,6 +43,10 @@
 export default {
   name: "FileUpload",
   props: {
+    questionData: {
+      type: Object,
+      required: true,
+    },
     modelValue: { type: Array, default: () => [] },
     accept: { type: String, default: ".jpg,.jpeg,.png,.pdf,.doc,.docx" },
     multiple: { type: Boolean, default: true },
