@@ -148,6 +148,7 @@ export default {
       delete this.selectedQuestion.step;
       delete this.selectedQuestion.defaultValue;
       delete this.selectedQuestion.allowTie;
+      delete this.selectedQuestion.pairs;
 
       switch (this.selectedQuestion.type) {
         case 'multiple_choice':
@@ -173,6 +174,13 @@ export default {
             items: this.selectedQuestion.items || ['Artifact 1', 'Artifact 2'],
             allowTie: this.selectedQuestion.allowTie ?? false
           });
+          break;
+  
+          case 'preference':
+            Object.assign(this.selectedQuestion, {
+              ...questionBase,
+              pairs: this.selectedQuestion.pairs || [{ left: 'Left', right: 'Right'}],
+            });
           break;
       }
 
