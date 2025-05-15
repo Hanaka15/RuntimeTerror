@@ -9,22 +9,21 @@
       @input="emitQuestionChange"
     />
     <h4>Attach Files</h4>
-    <Fileupload :questionData="questionData" @update="emitQuestionChange"></Fileupload>
+    <Fileupload
+      :questionData="questionData"
+      @update="emitQuestionChange"
+    ></Fileupload>
 
     <h4>Choices</h4>
     <div v-for="(choice, index) in questionData.choices" :key="index">
-      <input 
-        v-model="questionData.choices[index]" 
-        placeholder="Enter Choice" 
-        @input="emitQuestionChange"
-      />
+      <input v-model="questionData.choices[index]" placeholder="Enter Choice" />
     </div>
     <button @click="addChoice">Add Choice</button>
   </div>
 </template>
 
 <script>
-import Fileupload from './fileUpload.vue';
+import Fileupload from "./fileUpload.vue";
 export default {
   components: {
     Fileupload,
@@ -36,7 +35,7 @@ export default {
       default: () => ({
         question: "",
         choices: [],
-        files:[],
+        files: [],
       }), // Default to empty object if no data is passed
     },
   },
@@ -46,7 +45,7 @@ export default {
     },
     emitQuestionChange() {
       this.$emit("update", this.questionData);
-    }
+    },
   },
 };
 </script>
