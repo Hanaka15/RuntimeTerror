@@ -31,7 +31,7 @@
               </div>
             </td>
             <td>
-              <button class="edit" @click="editStudy(study.id)">
+              <button class="edit" @click="editStudy(study._id)">
                 <font-awesome-icon :icon="['fas', 'pen-to-square']" />
               </button>
             </td>
