@@ -9,7 +9,7 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Name</th>
+            <th>Title</th>
             <th>Responses</th>
             <th>Researchers</th>
             <th>Actions</th>
@@ -19,7 +19,7 @@
         <tbody>
           <tr v-for="(study, index) in studies" :key="study.id">
             <td>{{ index + 1 }}</td>
-            <td class="title">{{ study.name }}</td>
+            <td class="title">{{ study.title }}</td>
             <td>{{ study.responses || 0 }}/{{ study.total || 0 }}</td>
             <td>
               <div class="researchers">
