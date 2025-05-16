@@ -31,9 +31,11 @@
               </div>
             </td>
             <td>
-              <button class="edit" @click="editStudy(study._id)">
-                <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-              </button>
+              <div class="action-buttons">
+                <button class="action" @click="navigateToParticipants(study._id)">
+                  Action
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -68,6 +70,9 @@ export default {
   methods: {
     editStudy(studyId) {
       this.$router.push({ path: `/dashboard/edit/${studyId}` });
+    },
+    navigateToParticipants(studyId) {
+      this.$router.push(`/dashboard/participants/${studyId}`);
     }
   }
 };
@@ -154,5 +159,24 @@ export default {
   right: 1rem;
   bottom: 1rem;
   cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.action {
+  padding: 0.5rem 1rem;
+  background: var(--button-base);
+  color: var(--text-bright);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--button-hover);
+  }
 }
 </style>
