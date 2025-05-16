@@ -39,4 +39,5 @@ ParticipantSchema.virtual('currentQuestion').get(async function () {
   return this.answers.length;
 });
 
-module.exports = mongoose.model('Participant', ParticipantSchema);
+const Participant = mongoose.model('Participant', ParticipantSchema);
+module.exports = Participant;

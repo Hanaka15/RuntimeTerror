@@ -10,7 +10,8 @@ class ParticipantController {
 
     static async createParticipants(req, res) {
         try {
-            const { emails, studyId } = req.body;
+            const { studyId } = req.params;
+            const { emails } = req.body;
             const study = await Study.findById(studyId);
             if (!study) {
                 return res.status(404).json({ message: "Study not found" });
@@ -34,26 +35,40 @@ class ParticipantController {
         }
     }
 
-    static async findParticipantById(sessionId) {
-        const participant = await Participant.findById(sessionId);
-        if (!participant) {
-            throw new Error("Session not found");
+    static async getStudy(req, res) {
+        try {
+            const { participantId } = req.params; 
+
+            const participant = await Participant.findById(participantId);
+            console.log(participant, participantId)
+            if (!participant || participant.status === "completed") {
+                return res.status(404).json({ message: "Invalid participant id" });
+            }
+            const study = await Study.findById(participant.studyId);
+            if (!study) {
+                return res.status(404).json({ message: "Study not found" });
+            }
+
+            res.status(201).json({
+                study
+            });
+        } catch (error) {
+            sendErrorResponse(res, 500, error);
         }
-        return participant;
     }
 
     static async startSession(req, res) {
         try {
-            const { quizId } = req.params;
+            const { studyId } = req.params;
             const { demographics } = req.body;
 
-            const study = await Study.findById(quizId);
+            const study = await Study.findById(studyId);
             if (!study) {
-                return res.status(404).json({ message: "Quiz not found" });
+                return res.status(404).json({ message: "Study not found" });
             }
 
             const participant = await Participant.create({
-                studyId: quizId,
+                studyId: studyId,
                 demographics: demographics || {},
                 answers: [],
             });
@@ -61,7 +76,7 @@ class ParticipantController {
             res.status(200).json({
                 message: "Session started successfully",
                 sessionId: participant._id,
-                quiz: study,
+                study,
             });
         } catch (error) {
             sendErrorResponse(res, 500, "Session creation error:", error);

@@ -10,7 +10,7 @@
       <ConsentDemographics
         v-if="!sessionStarted && study"
         :study="study"
-        :studyId="$route.params.study_id"
+        :studyId="study._id"
         @session-started="handleSessionStarted"
       />
 
@@ -73,12 +73,12 @@
 </template>
 
 <script>
-import axios from "@/api/axios";
+import api from "@/api/axios";
 import ConsentDemographics from "../components/answers/ConsentDemographics.vue";
 import MultipleChoiceAnswer from "../components/answers/MultipleChoiceAnswer.vue";
 import RankAnswer from "../components/answers/RankAnswer.vue";
 import SliderAnswer from "../components/answers/SliderAnswer.vue";
-import Results from "./answers/Results.vue";
+import Results from "../components/answers/Results.vue";
 
 export default {
   components: {
@@ -132,11 +132,9 @@ export default {
   },
   methods: {
     async fetchStudy() {
-      const studyId = this.$route.params.study_id;
+      const sessionId = this.$route.params.sessionId;
       try {
-        const res = await axios.get(`/studies/${studyId}`, {
-          withCredentials: true,
-        });
+        const res = await api.get(`/sessions/${sessionId}`);
         this.study = res.data;
       } catch (error) {
         console.error("Failed to load study", error);
@@ -202,7 +200,7 @@ export default {
           })
         );
 
-        await axios.post(`/sessions/${this.sessionId}/answers`, {
+        await api.post(`/sessions/${this.sessionId}/answers`, {
           answers: answerArray,
         });
 

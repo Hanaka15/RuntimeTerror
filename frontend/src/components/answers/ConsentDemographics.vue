@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import axios from "@/api/axios";
+import api from "@/api/axios";
 
 export default {
   name: "ConsentDemographics",
@@ -73,7 +73,7 @@ export default {
   methods: {
     async startSession() {
       try {
-        const res = await axios.post(`/sessions/${this.studyId}`, {
+        const res = await api.post(`/sessions/${this.studyId}`, {
           demographics: this.demographics
         });
         this.$emit("session-started", res.data.sessionId);
