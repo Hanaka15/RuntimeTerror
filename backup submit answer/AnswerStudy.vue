@@ -75,11 +75,11 @@
 
 <script>
 import api from "@/api/axios";
-import ConsentDemographics from "../components/answers/ConsentDemographics.vue";
-import MultipleChoiceAnswer from "../components/answers/MultipleChoiceAnswer.vue";
-import RankAnswer from "../components/answers/RankAnswer.vue";
-import SliderAnswer from "../components/answers/SliderAnswer.vue";
-import Results from "../components/answers/Results.vue";
+import ConsentDemographics from "../frontend/src/components/answers/ConsentDemographics.vue";
+import MultipleChoiceAnswer from "../frontend/src/components/answers/MultipleChoiceAnswer.vue";
+import RankAnswer from "../frontend/src/components/answers/RankAnswer.vue";
+import SliderAnswer from "../frontend/src/components/answers/SliderAnswer.vue";
+import Results from "../frontend/src/components/answers/Results.vue";
 
 export default {
   components: {

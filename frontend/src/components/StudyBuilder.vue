@@ -11,8 +11,8 @@
 
 <script setup>
 import { useStudyStore } from '@/store/studyStore';
-import QuestionListSidebar from './QuestionListSidebar.vue';
-import QuestionEditorPanel from './QuestionEditorPanel.vue';
+import QuestionListSidebar from './StudyBuilder/QuestionListSidebar.vue';
+import QuestionEditorPanel from './StudyBuilder/QuestionEditorPanel.vue';
 import api from '@/api/axios';
 
 const store = useStudyStore();

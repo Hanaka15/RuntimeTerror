@@ -6,7 +6,7 @@
         :class="{ active: store.selectedQuestionIndex === null }"
         @click="store.setSelectedQuestion(null)"
       >
-        📝 Study Details
+        Study Details
       </li>
       <li
         v-for="(q, index) in store.questions"

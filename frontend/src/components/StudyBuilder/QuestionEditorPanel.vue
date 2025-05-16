@@ -25,8 +25,8 @@ import { computed } from 'vue';
 import { useStudyStore } from '@/store/studyStore';
 
 import StudyInfoEditor from './StudyInfoEditor.vue';
-import QuestionTypeRanking from './questions/QuestionTypeRanking.vue';
-import QuestionTypeSlider from './questions/QuestionTypeSlider.vue';
+import QuestionTypeRanking from './questions/RankingQuestion.vue';
+import QuestionTypeSlider from './questions/SliderQuestion.vue';
 
 const store = useStudyStore();
 

@@ -8,22 +8,22 @@ const sendErrorResponse = (res, status, message, error) => {
 
 class ParticipantController {
     
-    static async getStudy(req, res) {
+    static async getDemographic(req, res) {
         try {
             const { participantId } = req.params; 
 
             const participant = await Participant.findById(participantId);
-            console.log(participant, participantId)
-            if (!participant || participant.status === "completed") {
-                return res.status(404).json({ message: "Invalid participant id" });
+
+            if (!participant) {
+                return res.status(404).json({ message: "Participant not found" });
             }
-            const study = await Study.findById(participant.studyId);
-            if (!study) {
-                return res.status(404).json({ message: "Study not found" });
+
+            if (participant.consent) {
+                return res.status(400).json({ message: "Already consented" });
             }
 
             res.status(201).json({
-                study
+                demographics: participant.demographics,
             });
         } catch (error) {
             sendErrorResponse(res, 500, error);
@@ -38,8 +38,8 @@ class ParticipantController {
             const participant = await Participant.findById(participantId);
             console.log(participantId);
 
-            if (!participant) {
-                return res.status(404).json({ message: "Participant not found" });
+            if (!participant || participant.status === "completed") {
+                return res.status(404).json({ message: "Invalid participant" });
             }
             if (participant.consent && participant.demographics) {
                 return res.status(400).json({ message: "Already consented" });
@@ -48,12 +48,17 @@ class ParticipantController {
                 return res.status(403).json({ message: "Need consent" });
             }
 
+            const study = await Study.findById(participant.studyId);
+            if (!study) {
+                return res.status(404).json({ message: "Study not found" });
+            }
+
             participant.demographics = demographic;
             participant.consent = consent;
             await participant.save();
 
             res.status(201).json({
-                message: "demographics submitted successfully"
+                study,
             });
         } catch (error) {
             sendErrorResponse(res, 500, error);

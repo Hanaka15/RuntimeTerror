@@ -110,16 +110,6 @@ class StudyController {
     }
   }
 
-  static async getParticipants(req, res) {
-    try {
-      const { studyId } = req.params;
-      const participants = await Participant.find({ studyId }).lean();
-      res.status(200).json(participants);
-    } catch (error) {
-      sendErrorResponse(res, 500, "Error fetching participants:", error);
-    }
-  }
-
   static async createParticipants(req, res) {
     try {
       const { studyId } = req.params;
@@ -128,12 +118,29 @@ class StudyController {
       if (!study) {
         return res.status(404).json({ message: "Study not found" });
       }
+
+      const existingParticipants = await Participant.find({
+        studyId,
+        email: { $in: emails }
+      }).select('email');
+
+      const existingEmails = new Set(existingParticipants.map(p => p.email));
+
+      const newEmails = emails.filter(email => !existingEmails.has(email));
+
+      if (newEmails.length === 0) {
+        return res.status(200).json({
+          message: "No new participants to add (all emails already exist for this study)",
+          participants: []
+        });
+      }
+
       const participants = await Participant.insertMany(
-        emails.map(email => ({
+        newEmails.map(email => ({
           studyId,
           email,
           totalQuestions: study.questions.length,
-          demographics: {},
+          demographics: study.demographics,
           answers: [],
         }))
       );
@@ -144,6 +151,33 @@ class StudyController {
       });
     } catch (error) {
       sendErrorResponse(res, 500, "Error creating participants:", error);
+    }
+  }
+
+
+  static async getParticipants(req, res) {
+    try {
+      const { studyId } = req.params;
+      const participants = await Participant.find({ studyId }).lean();
+      res.status(200).json(participants);
+    } catch (error) {
+      sendErrorResponse(res, 500, "Error fetching participants:", error);
+    }
+  }
+
+  static async deleteParticipant(req, res) {
+    try {
+      const { studyId, participantId } = req.params;
+      const participant = await Participant.findOneAndDelete({ _id: participantId, studyId });
+
+      if (!participant) {
+        return res.status(404).json({ message: "Participant not found" });
+      }
+
+      res.status(200).json({ message: "Participant deleted successfully" });
+    }
+    catch (error) {
+      sendErrorResponse(res, 500, "Error deleting participant:", error);
     }
   }
 

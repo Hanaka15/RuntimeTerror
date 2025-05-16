@@ -11,5 +11,6 @@ router.patch("/:study_id", ensureAuth, StudyController.updateStudy);
 router.delete("/:study_id", ensureAuth, StudyController.deleteStudy);
 router.post("/:studyId/participants", ensureAuth, StudyController.createParticipants);
 router.get("/:studyId/participants", ensureAuth, StudyController.getParticipants);
+router.delete("/:studyId/participants/:participantId", ensureAuth, StudyController.deleteParticipant);
 
 module.exports = router;
