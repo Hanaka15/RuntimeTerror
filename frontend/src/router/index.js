@@ -9,6 +9,7 @@ import AnswerQuiz from '../pages/AnswerStudy.vue';
 import DashboardHome from '../components/DashboardHome.vue';
 import ProfileSettings from '../components/ProfileSettings.vue';
 import StudyBuilder from '../components/StudyBuilder.vue';
+import Participants from '../components/StudyParticipants.vue';
 
 const routes = [
   { path: '/login', name: 'Login', component: Login },
@@ -31,6 +32,11 @@ const routes = [
         path: 'create',
         name: 'StudyBuilder',
         component: StudyBuilder,
+      },
+      {
+        path: 'participants/:studyId',
+        name: 'Participants',
+        component: Participants,
       },
     ], 
   },

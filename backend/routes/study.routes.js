@@ -9,5 +9,7 @@ router.get("/", ensureAuth, StudyController.getStudies);
 router.get("/:study_id", ensureAuth, StudyController.getStudyById);
 router.patch("/:study_id", ensureAuth, StudyController.updateStudy);
 router.delete("/:study_id", ensureAuth, StudyController.deleteStudy);
+router.post("/:studyId/participants", ensureAuth, StudyController.createParticipants);
+router.get("/:studyId/participants", ensureAuth, StudyController.getParticipants);
 
 module.exports = router;
