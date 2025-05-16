@@ -13,7 +13,6 @@
             <th>Responses</th>
             <th>Researchers</th>
             <th>Actions</th>
-            <!--<th>Status</th>-->
           </tr>
         </thead>
         <tbody>

@@ -1,6 +1,6 @@
 const researcherModel = require("../models/researcher.model");
 const Study = require("../models/study.model");
-const { QuestionSchema } = require("../models/study.model");
+const Participant = require("../models/participant.model");
 
 const sendErrorResponse = (res, status, message, error) => {
   console.error(message, error);
@@ -72,7 +72,6 @@ class StudyController {
         };
       });
 
-      // Attach files to questions
       if (req.files && Array.isArray(req.files)) {
         req.files.forEach((file) => {
           const match = file.fieldname.match(/^questions\[(\d+)\]\[files\]\[\d+\]$/);
@@ -108,6 +107,43 @@ class StudyController {
         message: "Failed to create study",
         error: error.message,
       });
+    }
+  }
+
+  static async getParticipants(req, res) {
+    try {
+      const { studyId } = req.params;
+      const participants = await Participant.find({ studyId }).lean();
+      res.status(200).json(participants);
+    } catch (error) {
+      sendErrorResponse(res, 500, "Error fetching participants:", error);
+    }
+  }
+
+  static async createParticipants(req, res) {
+    try {
+      const { studyId } = req.params;
+      const { emails } = req.body;
+      const study = await Study.findById(studyId);
+      if (!study) {
+        return res.status(404).json({ message: "Study not found" });
+      }
+      const participants = await Participant.insertMany(
+        emails.map(email => ({
+          studyId,
+          email,
+          totalQuestions: study.questions.length,
+          demographics: {},
+          answers: [],
+        }))
+      );
+
+      res.status(201).json({
+        message: "Participants created successfully",
+        participants,
+      });
+    } catch (error) {
+      sendErrorResponse(res, 500, "Error creating participants:", error);
     }
   }
 
