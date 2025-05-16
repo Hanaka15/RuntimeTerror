@@ -55,7 +55,7 @@ export default {
       type: Object,
       required: true
     },
-    studyId: {
+    sessionId: {
       type: String,
       required: true
     }
@@ -71,12 +71,12 @@ export default {
   },
   emits: ["session-started"],
   mounted() {
-    console.log("studyId in ConsentDemographics:", this.studyId);
+    console.log("sessionId in ConsentDemographics:", this.sessionId);
   },
   methods: {
     async startSession() {
       try {
-        const res = await api.post(`/sessions/${this.studyId}`, {
+        const res = await api.post(`/sessions/${this.sessionId}`, {
           demographics: this.demographics
         });
         this.$emit("session-started", res.data.sessionId);

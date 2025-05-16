@@ -8,7 +8,7 @@ const AnswerSchema = new Schema({
 
 const ParticipantSchema = new Schema({
   studyId: { type: Schema.Types.ObjectId, ref: 'Study', required: true },
-  email: { type: String, required: true },
+  email: { type: String },
   demographics: { type: Object },
   totalQuestions: { type: Number, required: true },
   consent: { type: Boolean, required: true, default: false },

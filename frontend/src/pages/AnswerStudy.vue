@@ -11,7 +11,7 @@
       <ConsentDemographics
         v-if="!sessionStarted && study"
         :study="study"
-        :studyId="study._id"
+        :sessionId="study._id" 
         @session-started="handleSessionStarted"
       />
 

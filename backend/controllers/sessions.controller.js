@@ -30,32 +30,35 @@ class ParticipantController {
         }
     }
 
-    static async startSession(req, res) {
+    static async submitDemographic(req, res) {
         try {
-            const { studyId } = req.params;
-            console.log("Received studyId:", studyId); 
-            const { demographics } = req.body;
+            const { participantId } = req.params;
+            const { demographic, consent } = req.body;
 
-            const study = await Study.findById(studyId);
-            if (!study) {
-                return res.status(404).json({ message: "Study not found" });
+            const participant = await Participant.findById(participantId);
+            console.log(participantId);
+
+            if (!participant) {
+                return res.status(404).json({ message: "Participant not found" });
+            }
+            if (participant.consent && participant.demographics) {
+                return res.status(400).json({ message: "Already consented" });
+            }
+            if (!participant.consent) {
+                return res.status(403).json({ message: "Need consent" });
             }
 
-            const participant = await Participant.create({
-                studyId: studyId,
-                demographics: demographics || {},
-                answers: [],
-            });
+            participant.demographics = demographic;
+            participant.consent = consent;
+            await participant.save();
 
-            res.status(200).json({
-                message: "Session started successfully",
-                sessionId: participant._id,
-                study,
+            res.status(201).json({
+                message: "demographics submitted successfully"
             });
         } catch (error) {
-            sendErrorResponse(res, 500, "Session creation error:", error);
+            sendErrorResponse(res, 500, error);
         }
-    }
+    }  
 
     static async submitAnswer(req, res) {
         try {
