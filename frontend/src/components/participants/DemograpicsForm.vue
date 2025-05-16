@@ -1,13 +1,15 @@
 <template>
     <form @submit.prevent="emitDemographics" class="demographics-form">
-        <div v-for="field in schema" :key="field.name" class="demographics-field">
-            <label :for="field.name">{{ field.label }}</label>
+        <div v-for="(field, idx) in schema" :key="idx" class="demographics-field">
+            <label :for="'demographic-' + idx">{{ field.label }}</label>
             <input
-                v-model="model[field.name]"
+                :id="'demographic-' + idx"
+                :name="field.label"
                 :type="field.type || 'text'"
-                :id="field.name"
-                :name="field.name"
                 :required="field.required"
+                :value="model[field.label] ?? ''"
+                @input="updateField(field.label, $event.target.value, field.type)"
+                autocomplete="off"
             />
         </div>
         <button type="submit" class="demographics-submit">Continue</button>
@@ -15,49 +17,33 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue';
-import { defineProps, defineEmits } from 'vue';
+import { reactive, watch } from 'vue';
 
 const props = defineProps({
     schema: Array,
-    modelValue: Object
+    modelValue: Object,
 });
 const emit = defineEmits(['update:modelValue', 'submitted']);
 
-const model = ref({ ...props.modelValue });
+const model = reactive({});
 
-watchEffect(() => {
-    emit('update:modelValue', model.value);
-});
+watch(
+    () => [props.schema, props.modelValue],
+    ([schema, modelValue]) => {
+        if (!schema) return;
+        for (const field of schema) {
+            model[field.label] = (modelValue && modelValue[field.label]) || '';
+        }
+    },
+    { immediate: true }
+);
 
-const emitDemographics = () => {
+function updateField(label, value, type) {
+    model[label] = type === 'number' && value !== '' ? Number(value) : value;
+    emit('update:modelValue', { ...model });
+}
+
+function emitDemographics() {
     emit('submitted');
-};
+}
 </script>
-
-<style scoped>
-.demographics-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.demographics-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.demographics-field label {
-    font-weight: 500;
-}
-
-.demographics-field input {
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-.demographics-submit {
-    width: 100%;
-}
-</style>

@@ -141,7 +141,7 @@ class StudyController {
           studyId,
           email,
           totalQuestions: study.questions.length,
-          demographics: study.demographics,
+          demographics: [],
           answers: [],
         }))
       );

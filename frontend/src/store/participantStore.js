@@ -41,12 +41,13 @@ export const useParticipantStore = defineStore('participant', {
 
     async submitParticipantInfo(demographics, consentAccepted) {
       if (!this.participant?._id) throw new Error('No participant loaded');
-      // Matches backend: POST /submit-participant/:id
+      // Convert demographics object to array of { name, value }
+      const demographicsArray = Object.entries(demographics).map(([name, value]) => ({ name, value }));
       await axios.post(`/sessions/submit-participant/${this.participant._id}`, {
-        demographics,
+        demographics: demographicsArray,
         consentAccepted,
       });
-      this.participant.demographics = demographics;
+      this.participant.demographics = demographicsArray;
       this.participant.consent = consentAccepted;
 
       // Log state for debugging

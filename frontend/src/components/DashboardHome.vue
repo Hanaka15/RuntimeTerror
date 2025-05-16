@@ -16,10 +16,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(study, index) in studies" :key="study.id">
+          <tr v-for="(study, index) in studies" :key="study._id">
             <td>{{ index + 1 }}</td>
             <td class="title">{{ study.title }}</td>
-            <td>{{ study.responses || 0 }}/{{ study.total || 0 }}</td>
+            <td>
+              <span v-if="study.participantStats">
+                {{ study.participantStats.responded }} / {{ study.participantStats.total }}
+              </span>
+              <span v-else>—</span>
+            </td>
             <td>
               <div class="researchers">
                 <img
@@ -64,7 +69,29 @@ export default {
   async mounted() {
     try {
       const response = await api.get("/studies");
-      this.studies = response.data;
+      const studies = response.data;
+
+      // Fetch participants for each study to compute responders
+      const studiesWithStats = await Promise.all(
+        studies.map(async (study) => {
+          try {
+            const res = await api.get(`/studies/${study._id}/participants`);
+            const participants = res.data || [];
+            const total = participants.length;
+            const responded = participants.filter(
+              p => Array.isArray(p.answers) && p.answers.length > 0
+            ).length;
+            return {
+              ...study,
+              participantStats: { responded, total }
+            };
+          } catch {
+            return { ...study, participantStats: null };
+          }
+        })
+      );
+
+      this.studies = studiesWithStats;
     } catch (error) {
       console.error("Failed to fetch studies:", error);
     }
