@@ -8,6 +8,7 @@ router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
 router.post('/logout', ensureAuth, AuthController.logout);
 router.get('/me', ensureAuth, AuthController.getUser);
+router.patch('/me', ensureAuth, AuthController.updateProfile);
 
 // Google
 router.get('/google', AuthController.googleAuth);

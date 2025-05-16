@@ -113,6 +113,29 @@ class AuthController {
       res.status(500).json({ error: 'Failed to retrieve user information' });
     }
   }
+
+  /**
+   * @route PATCH /user/me
+   */
+  static async updateProfile(req, res) {
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+  
+    try {
+      const { username } = req.body;
+  
+      const researcher = await Researcher.findById(req.user._id);
+      if (!researcher) return res.status(404).json({ error: "User not found" });
+  
+      if (username) researcher.username = username;
+      await researcher.save();
+  
+      res.status(200).json({ message: "Profile updated", researcher });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to update profile" });
+    }
+  }
+  
 }
 
 module.exports = AuthController;
