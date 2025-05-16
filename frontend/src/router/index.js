@@ -9,6 +9,7 @@ import AnswerQuiz from '../components/AnswerStudy.vue';
 import DashboardHome from '../components/DashboardHome.vue';
 import ProfileSettings from '../components/ProfileSettings.vue';
 import StudyBuilder from '../components/StudyBuilder.vue';
+import StudyParticipants from '../pages/StudyParticipants.vue';
 
 const routes = [
   { path: '/login', name: 'Login', component: Login },
@@ -33,9 +34,9 @@ const routes = [
         component: StudyBuilder,
       },
       {
-        path: 'edit/:study_id',
-        name: 'EditStudy',
-        component: StudyBuilder,
+        path: 'participants/:study_id',
+        name: 'StudyParticipants',
+        component: StudyParticipants,
         meta: { requiresAuth: true },
       },
     ], 

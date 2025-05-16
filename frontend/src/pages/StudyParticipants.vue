@@ -48,60 +48,61 @@
 </template>
 
 <script>
-import api from '@/api/axios';
-
 export default {
-  name: 'StudyParticipants',
   data() {
     return {
-      currentEmail: '',
       emails: [],
+      currentEmail: '',
       submittedEmails: [],
-      studyId: this.$route.params.study_id
+      studyId: '12345', // Replace this with your actual study ID
     };
   },
   methods: {
     addEmail() {
-      if (this.currentEmail && this.isValidEmail(this.currentEmail)) {
-        if (!this.emails.includes(this.currentEmail)) {
-          this.emails.push(this.currentEmail);
-        }
+      const email = this.currentEmail.trim();
+      if (email && this.validateEmail(email)) {
+        this.emails.push(email);
         this.currentEmail = '';
+      } else {
+        alert('Please enter a valid email address.');
       }
     },
     removeEmail(index) {
       this.emails.splice(index, 1);
     },
-    isValidEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
+    validateEmail(email) {
+      const regex = /^\S+@\S+\.\S+$/;
+      return regex.test(email);
     },
     async submitEmails() {
+      if (this.emails.length === 0) return;
+
       try {
-        // Create sessions for each email
-        const sessions = await Promise.all(
-          this.emails.map(email => 
-            api.post(`/sessions/${this.studyId}`, {
-              demographics: { email }
-            })
-          )
-        );
-
-        // Store the submitted emails
-        this.submittedEmails = [...this.submittedEmails, ...this.emails];
-        this.emails = [];
-
-        // Send participation links via email
-        await api.post(`/studies/${this.studyId}/notify`, {
-          sessions: sessions.map(s => s.data.sessionId)
+        const response = await fetch('/api/submit-participants', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            studyId: this.studyId,
+            emails: this.emails,
+          }),
         });
 
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+
+        // Handle successful submission
+        this.submittedEmails = [...this.emails];
+        this.emails = [];
+        alert('Emails successfully submitted!');
       } catch (error) {
-        console.error('Failed to submit emails:', error);
-        alert('Failed to submit emails. Please try again.');
+        console.error('Error submitting emails:', error);
+        alert('There was an error submitting the emails.');
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -125,7 +126,10 @@ export default {
   padding: 1rem;
   border-radius: var(--border-radius);
   border: 1px solid var(--border);
+
+  
 }
+
 
 .email-tags {
   display: flex;
@@ -168,6 +172,11 @@ export default {
   color: var(--text-main);
   padding: 0.25rem;
   outline: none;
+
+   
+   &:focus{
+    box-shadow: none;
+  }
 }
 
 .submit-button {

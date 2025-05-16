@@ -6,4 +6,5 @@ const router = express.Router();
 router.post("/:quizId", ParticipantController.startSession);
 router.post("/:sessionId/answers", ParticipantController.submitAnswer);
 
+
 module.exports = router;
