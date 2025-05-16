@@ -8,7 +8,7 @@ const BaseQuestionSchema = new Schema(
       required: true,
       enum: ["multiple_choice", "ranking", "preference", "slider", "file_upload"],
     },
-    question: { type: String, required: true, validate: { validator: function(value) { return value !== null; } } },
+    question: { type: String, required: true/*, validate: { validator: function(value) { return value !== null; } } */},
     files: [
       {
         url: { type: String, required: true },

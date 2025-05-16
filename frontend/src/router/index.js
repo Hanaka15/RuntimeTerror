@@ -5,7 +5,7 @@ import { useAuthStore } from '../store/authStore';
 import Login from '../pages/Login.vue';
 import Register from '../pages/Register.vue';
 import Dashboard from '../pages/Dashboard.vue';
-import AnswerQuiz from '../components/AnswerStudy.vue';
+import AnswerQuiz from '../pages/AnswerStudy.vue';
 import DashboardHome from '../components/DashboardHome.vue';
 import ProfileSettings from '../components/ProfileSettings.vue';
 import StudyBuilder from '../components/StudyBuilder.vue';
@@ -41,7 +41,7 @@ const routes = [
       },
     ], 
   },
-  { path: '/session/:study_id', name: 'AnswerStudy', component: AnswerQuiz, meta: { requiresAuth: false } },
+  { path: '/session/:sessionId', name: 'AnswerStudy', component: AnswerQuiz, meta: { requiresAuth: false } },
   { path: '/:catchAll(.*)', redirect: '/login' },
 ];
 
