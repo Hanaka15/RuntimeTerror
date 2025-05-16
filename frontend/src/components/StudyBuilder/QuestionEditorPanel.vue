@@ -8,7 +8,6 @@
         <select v-model="question.type">
           <option value="ranking">Ranking</option>
           <option value="slider">Slider</option>
-          <option value="text">Text</option>
         </select>
       </div>
       <component

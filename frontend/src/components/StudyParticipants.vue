@@ -57,6 +57,9 @@
               </div>
             </div>
             <div class="right">
+              <button class="copy-link-btn" @click="copyParticipantLink(participant._id)">
+                Copy Link
+              </button>
               <button class="delete-btn" @click="deleteParticipant(participant._id)">Delete</button>
             </div>
           </div>
@@ -89,6 +92,7 @@ export default {
       page: 1,
       hasMore: true,
       loadingMore: false,
+      participantLinkCopied: null, // store participantId if copied
     };
   },
   methods: {
@@ -167,6 +171,13 @@ export default {
         this.bannerType = 'error';
         console.error('Failed to delete participant:', error);
       }
+    },
+    copyParticipantLink(participantId) {
+      const url = `http://localhost:5173/participant/${participantId}`;
+      navigator.clipboard.writeText(url).then(() => {
+        this.participantLinkCopied = participantId;
+        setTimeout(() => { this.participantLinkCopied = null; }, 1500);
+      });
     },
     handleScroll() {
       const container = this.$refs.scrollContainer;
@@ -358,15 +369,24 @@ export default {
   }
   .right {
     margin-left: 1.5rem;
-    .delete-btn {
-      background: #fff1f0;
-      color: #a8071a;
-      border: 1px solid #ffa39e;
-      border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    .copy-link-btn {
       padding: 0.35rem 1rem;
       cursor: pointer;
       font-size: 0.95rem;
-      transition: background 0.2s;
+      margin-bottom: 0.3rem;
+      transition: background 0.13s;
+    }
+
+    .delete-btn {
+      border: 1px solid #f36860;
+      padding: 0.35rem 1rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      margin-bottom: 0.3rem;
+      transition: background 0.13s;
       &:hover {
         background: #ffa39e;
         color: #fff;

@@ -9,7 +9,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 // Font Awesome imports
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faEye, faPenToSquare, faHouse, faUser, faPlus, faBell} from '@fortawesome/free-solid-svg-icons';
+import { faEye, faPenToSquare, faHouse, faUser, faPlus, faBell, faUsers, faFileCsv } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to the library
 library.add(
@@ -18,7 +18,9 @@ library.add(
     faHouse,
     faUser,
     faPlus,
-    faBell
+    faBell,
+    faUsers,
+    faFileCsv
 );
 
 const app = createApp(App);

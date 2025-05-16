@@ -62,7 +62,9 @@ const routes = [
       },
       {
         path: '',
-        redirect: 'start', // default to start if path is just /participant/:id
+        redirect: (to) => {
+          return `/participant/${to.params.participantId}/start`;
+        }
       }
     ]
   },

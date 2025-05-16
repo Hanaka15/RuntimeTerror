@@ -4,53 +4,87 @@ import axios from '@/api/axios';
 
 export const useParticipantStore = defineStore('participant', {
   state: () => ({
-    participantId: null,
+    participant: null,
+    study: null, 
     demographicsSchema: null,
     consentText: '',
-    study: null,
-    demographics: {},
-    consentAccepted: false,
-    answers: [],
+    collaborators: [],
     currentQuestionIndex: 0,
   }),
 
   actions: {
     async initStudy(participantId) {
       try {
-        const { data } = await axios.get(`/api/init/${participantId}`);
+        // Matches backend: GET /init/:participantId
+        const { data } = await axios.get(`/sessions/init/${participantId}`);
 
-        this.participantId = participantId;
-        this.demographicsSchema = data.demographics;
-        this.consentText = data.consent;
+        this.participant = data.participant;
         this.study = data.study;
-        this.currentQuestionIndex = data.currentQuestionIndex || 0;
-        this.answers = data.answers || [];
+        this.demographicsSchema = data.study?.demographics || null;
+        this.consentText = data.study?.consent || '';
+        this.collaborators = data.study?.collaborators || [];
+        this.currentQuestionIndex = data.participant?.answers?.length || 0;
+
+        // Log state for debugging
+        console.log('initStudy:', {
+          participant: this.participant,
+          study: this.study,
+          demographicsSchema: this.demographicsSchema,
+          consentText: this.consentText,
+          collaborators: this.collaborators,
+          currentQuestionIndex: this.currentQuestionIndex
+        });
       } catch (error) {
-        throw new Error('Failed to initialize study: ' + error.response?.data?.error || error.message);
+        throw new Error('Failed to initialize study: ' + (error.response?.data?.error || error.message));
       }
     },
 
     async submitParticipantInfo(demographics, consentAccepted) {
-      await axios.post(`/api/submit-participant/${this.participantId}`, {
+      if (!this.participant?._id) throw new Error('No participant loaded');
+      // Matches backend: POST /submit-participant/:id
+      await axios.post(`/sessions/submit-participant/${this.participant._id}`, {
         demographics,
         consentAccepted,
       });
-      this.demographics = demographics;
-      this.consentAccepted = consentAccepted;
+      this.participant.demographics = demographics;
+      this.participant.consent = consentAccepted;
+
+      // Log state for debugging
+      console.log('submitParticipantInfo:', {
+        demographics: this.participant.demographics,
+        consent: this.participant.consent
+      });
     },
 
     async submitAnswer(questionId, answer) {
-      await axios.post(`/api/submit-answer/${this.participantId}`, {
+      if (!this.participant?._id) throw new Error('No participant loaded');
+      // Matches backend: POST /submit-answer/:id
+      await axios.post(`/sessions/submit-answer/${this.participant._id}`, {
         questionId,
         answer,
       });
-
-      this.answers.push({ questionId, answer });
+      this.participant.answers = [
+        ...(this.participant.answers || []),
+        { questionId, response: answer }
+      ];
       this.currentQuestionIndex++;
+
+      // Log state for debugging
+      console.log('submitAnswer:', {
+        answers: this.participant.answers,
+        currentQuestionIndex: this.currentQuestionIndex
+      });
     },
 
     async completeStudy() {
-      await axios.post(`/api/complete-study/${this.participantId}`);
+      if (!this.participant?._id) throw new Error('No participant loaded');
+      // Matches backend: POST /complete-study/:id
+      await axios.post(`/sessions/complete-study/${this.participant._id}`);
+
+      // Log state for debugging
+      console.log('completeStudy:', {
+        participant: this.participant
+      });
     }
   }
 });

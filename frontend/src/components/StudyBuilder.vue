@@ -50,8 +50,8 @@ async function submitStudy() {
 <style scoped>
 .study-builder {
     display: flex;
-    height: calc(100% - 60px);
-    /* leave space for button */
+    height: 100%;
+    width: 100%;
 }
 
 button {
@@ -61,5 +61,9 @@ button {
     position: absolute;
     right: 1rem;
     bottom: 1rem;
+}
+
+.editor-panel {
+    width: 100%;
 }
 </style>

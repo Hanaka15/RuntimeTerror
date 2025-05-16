@@ -1,6 +1,7 @@
 const researcherModel = require("../models/researcher.model");
 const Study = require("../models/study.model");
 const Participant = require("../models/participant.model");
+const { Parser } = require('json2csv');
 
 const sendErrorResponse = (res, status, message, error) => {
   console.error(message, error);
@@ -248,6 +249,62 @@ class StudyController {
       sendErrorResponse(res, 500, "Unexpected error fetching study", error);
     }
   }
+
+  static async exportParticipantsCSV(req, res) {
+    try {
+      const { studyId } = req.params;
+      const study = await Study.findById(studyId).lean();
+      if (!study) {
+        return res.status(404).json({ message: "Study not found" });
+      }
+
+      const participants = await Participant.find({ studyId }).lean();
+      let demographicsFields = [];
+      if (Array.isArray(study.demographics)) {
+        demographicsFields = study.demographics.map(field => ({
+          label: field.label,
+          value: row => (row.demographics && (row.demographics[field.label] ?? row.demographics[field.name])) || ''
+        }));
+      } else if (study.demographics && typeof study.demographics === 'object') {
+        demographicsFields = Object.keys(study.demographics).map(key => ({
+          label: key,
+          value: row => (row.demographics && row.demographics[key]) || ''
+        }));
+      }
+
+      const questionFields = (study.questions || []).map(q => ({
+        label: q.question,
+        value: row => {
+          const answerObj = (row.answers || []).find(a => a.questionId == q._id.toString());
+          if (!answerObj) return '';
+          if (typeof answerObj.response === 'object') return JSON.stringify(answerObj.response);
+          return answerObj.response;
+        }
+      }));
+
+      // Consent and Status
+      const fields = [
+        ...demographicsFields,
+        ...questionFields,
+        { label: 'Consent', value: row => row.consent ? 'Yes' : 'No' },
+        { label: 'Status', value: row => {
+          if (!row.answers || row.answers.length === 0) return 'not_started';
+          if (row.answers.length < row.totalQuestions) return 'in_progress';
+          return 'completed';
+        }},
+      ];
+
+      const parser = new Parser({ fields });
+      const csv = parser.parse(participants);
+
+      res.header('Content-Type', 'text/csv');
+      res.attachment(`study_${studyId}_participants.csv`);
+      return res.send(csv);
+    } catch (error) {
+      sendErrorResponse(res, 500, "Error exporting participants as CSV:", error);
+    }
+  }
 }
+
 
 module.exports = StudyController;

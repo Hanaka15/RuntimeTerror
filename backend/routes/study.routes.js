@@ -12,5 +12,6 @@ router.delete("/:study_id", ensureAuth, StudyController.deleteStudy);
 router.post("/:studyId/participants", ensureAuth, StudyController.createParticipants);
 router.get("/:studyId/participants", ensureAuth, StudyController.getParticipants);
 router.delete("/:studyId/participants/:participantId", ensureAuth, StudyController.deleteParticipant);
+router.get("/:studyId/participants/export/csv", ensureAuth, StudyController.exportParticipantsCSV);
 
 module.exports = router;

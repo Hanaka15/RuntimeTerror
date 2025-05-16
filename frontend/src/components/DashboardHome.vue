@@ -31,8 +31,11 @@
             </td>
             <td>
               <div class="action-buttons">
-                <button class="action" @click="navigateToParticipants(study._id)">
-                  Action
+                <button class="action icon-btn" @click="navigateToParticipants(study._id)" title="Participants">
+                  <font-awesome-icon :icon="['fas', 'users']" />
+                </button>
+                <button class="action icon-btn download-csv" @click="downloadCSV(study._id)" title="Download CSV">
+                  <font-awesome-icon :icon="['fas', 'file-csv']" />
                 </button>
               </div>
             </td>
@@ -67,9 +70,34 @@ export default {
     }
   },
   methods: {
-    
     navigateToParticipants(studyId) {
       this.$router.push(`/dashboard/participants/${studyId}`);
+    },
+    async downloadCSV(studyId) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/studies/${studyId}/participants/export/csv`,
+          {
+            method: "GET",
+            headers: {
+              "Accept": "text/csv"
+            },
+            credentials: "include"
+          }
+        );
+        if (!response.ok) throw new Error("Failed to download CSV");
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `study_${studyId}_participants.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (e) {
+        alert("Failed to export CSV");
+      }
     }
   }
 };
@@ -160,20 +188,25 @@ export default {
 
 .action-buttons {
   display: flex;
+  flex-direction: row;
+  justify-content: center;
   gap: 0.5rem;
+}
+
+.action.icon-btn {
+  padding: 0.5rem 0.7rem;
+  background: var(--background-alt);
+  color: var(--text-main);
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  align-items: center;
   justify-content: center;
 }
 
-.action {
-  padding: 0.5rem 1rem;
-  background: var(--button-base);
+.action.icon-btn:hover {
+  background: var(--button-hover);
   color: var(--text-bright);
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-
-  &:hover {
-    background: var(--button-hover);
-  }
 }
+
 </style>

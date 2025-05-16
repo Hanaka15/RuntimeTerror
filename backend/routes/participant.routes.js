@@ -4,8 +4,10 @@ const { ensureAuth } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-router.post("/:participantId", ParticipantController.submitDemographic);
-router.get("/:participantId", ParticipantController.getDemographic);
-router.post("/:participantId/answers", ParticipantController.submitAnswer);
+router.get("/init/:participantId", ParticipantController.initSession);
+router.post("/submit-participant/:id", ParticipantController.submitParticipantInfo);
+router.post("/submit-answer/:id", ParticipantController.submitAnswer);
+router.post("/complete-study/:id", ParticipantController.completeStudy);
+router.get("/status/:id", ParticipantController.getStatus);
 
 module.exports = router;

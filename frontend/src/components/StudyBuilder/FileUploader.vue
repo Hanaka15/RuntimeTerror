@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="file-uploader"
-    @dragover.prevent
-    @drop.prevent="handleDrop"
-  >
+  <div class="file-uploader" @dragover.prevent @drop.prevent="handleDrop">
     <label class="upload-label">
       <input type="file" multiple @change="handleFileInput" hidden />
       <span>📁 Click or drag files here to upload</span>
@@ -12,27 +8,15 @@
     <div class="file-preview" v-if="previewFiles.length">
       <div class="file-card" v-for="(file, index) in previewFiles" :key="file.id">
         <div class="preview">
-          <img
-            v-if="file.type.startsWith('image/')"
-            :src="file.preview"
-            alt="Image Preview"
-          />
-          <video
-            v-else-if="file.type.startsWith('video/')"
-            :src="file.preview"
-            controls
-          />
-          <audio
-            v-else-if="file.type.startsWith('audio/')"
-            :src="file.preview"
-            controls
-          />
+          <img v-if="file.type.startsWith('image/')" :src="file.preview" alt="Image Preview" />
+          <video v-else-if="file.type.startsWith('video/')" :src="file.preview" controls />
+          <audio v-else-if="file.type.startsWith('audio/')" :src="file.preview" controls />
           <div v-else class="file-icon">📄</div>
         </div>
         <div class="file-info">
           <span class="filename">{{ file.name }}</span>
-          <button @click="removeFile(index)">❌</button>
         </div>
+        <button class="remove-btn" @click="removeFile(index)">Remove</button>
       </div>
     </div>
   </div>
@@ -122,66 +106,75 @@ function removeFile(index) {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .file-uploader {
-    border: 2px dashed #ccc;
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
+  border: 2px dashed rgba(0, 0, 0, 0.527);
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
 }
 
 .upload-label {
-    display: block;
-    cursor: pointer;
-    color: #555;
-    font-weight: bold;
+  display: block;
+  cursor: pointer;
+  color: #555;
+  font-weight: bold;
+
+  input {
+    margin: 0 auto;
+    margin-bottom: 1rem;
+  }
 }
 
 .file-preview {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-    gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  gap: 1rem;
 }
 
 .file-card {
-    width: 120px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 0.5rem;
-    text-align: center;
-    position: relative;
+  border-radius: 6px;
+  padding: 0.5rem;
+  text-align: center;
+  position: relative;
 }
 
 .preview img,
 .preview video {
-    max-width: 100%;
-    max-height: 80px;
-    display: block;
-    margin: 0 auto;
+  max-width: 100%;
+  max-height: 150px;
+  display: block;
+  margin: 0 auto;
 }
 
 .preview audio {
-    width: 100%;
+  width: 100%;
 }
 
 .file-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  margin: 0.25rem 0 .5rem 0;
+  position: relative;
+}
+
+.remove-btn {
+  width: 100%;
+  border: 1px solid #ff2121;
 }
 
 .filename {
-    flex-grow: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .file-icon {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 </style>
