@@ -67,9 +67,7 @@ export default {
     }
   },
   methods: {
-    editStudy(studyId) {
-      this.$router.push({ path: `/dashboard/edit/${studyId}` });
-    },
+    
     navigateToParticipants(studyId) {
       this.$router.push(`/dashboard/participants/${studyId}`);
     }
