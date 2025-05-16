@@ -70,6 +70,9 @@ export default {
     };
   },
   emits: ["session-started"],
+  mounted() {
+    console.log("studyId in ConsentDemographics:", this.studyId);
+  },
   methods: {
     async startSession() {
       try {

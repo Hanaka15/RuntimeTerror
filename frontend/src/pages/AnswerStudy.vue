@@ -7,6 +7,7 @@
     <Results v-if="quizCompleted" />
 
     <template v-else>
+      <h3>Consent Form and Demographics</h3>
       <ConsentDemographics
         v-if="!sessionStarted && study"
         :study="study"
@@ -135,7 +136,7 @@ export default {
       const sessionId = this.$route.params.sessionId;
       try {
         const res = await api.get(`/sessions/${sessionId}`);
-        this.study = res.data;
+        this.study = res.data.study;
       } catch (error) {
         console.error("Failed to load study", error);
       }

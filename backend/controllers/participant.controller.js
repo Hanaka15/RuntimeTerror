@@ -60,6 +60,7 @@ class ParticipantController {
     static async startSession(req, res) {
         try {
             const { studyId } = req.params;
+            console.log("Received studyId:", studyId); 
             const { demographics } = req.body;
 
             const study = await Study.findById(studyId);
