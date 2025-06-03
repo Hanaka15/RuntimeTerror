@@ -1,0 +1,2 @@
+fix login/register error banner.
+fix logout redirect.
