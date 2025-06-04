@@ -17,6 +17,7 @@ services:
     ports:
       - "8282:5000"
     environment:
+      - NODE_ENV=production
       - MONGO_URI=mongodb://mongo:27017/RTT
       - SESSION_SECRET=kasomhelst
       - CLIENT_URL=https://group2.sustainability.it.ntnu.no
