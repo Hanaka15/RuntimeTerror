@@ -3,5 +3,6 @@ exports.ensureAuth = (req, res, next) => {
         return next();
     } else {
         return res.status(401).json({ message: "Unauthorized" }); 
+        console.log(req)
     }
 };

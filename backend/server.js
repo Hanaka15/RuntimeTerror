@@ -13,6 +13,9 @@ require("./config/passport");
 
 const app = express();
 
+// Trust proxy for deployment behind nginx
+app.set('trust proxy', 1);
+
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.json());
@@ -36,9 +39,10 @@ app.use(session({
   }),
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production" ? 'auto' : false,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 1000 * 60 * 60 * 24 * 7,
+    domain: process.env.NODE_ENV === "production" ? ".sustainability.it.ntnu.no" : undefined,
   }
 }));
 
