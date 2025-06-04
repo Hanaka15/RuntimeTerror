@@ -1,33 +1,27 @@
-# the base image you start from - some flavor of linux
-# (slim is a small-size linux distro)
-FROM node:21.6.1-slim
-# some optional labels - any info you want to add to the image
-LABEL author="Aliaksei"
-LABEL version="0.0.2"
-# the port that your app inside a container listens on
-# (the port that you run app.listen(PORT) for in Express)
-EXPOSE 8080/tcp
-# some general-purpose bash you want run in your container
-# e.g., adding users/user groups
-RUN groupadd app-gr
-RUN useradd -g app-gr usr
-# or making a directory
-RUN mkdir /app
-# setting the working directory for the follow-up commands
-# (similar to cd in bash)
+# Backend Dockerfile for docker-compose setup
+FROM node:22-slim
+
+# Labels for image metadata
+LABEL author="Jahn-Aage Hegg"
+LABEL version="0.0.3"
+
+# Set working directory
 WORKDIR /app
-# copying files from a directory in your system
-# (e.g., current directory ".") to a directory inside
-# your container (e.g., "/app")
-COPY --chown=usr:app-gr . /app
-# some more bash commands - installing node packages for your app
-RUN npm install --production
-# running follow up commands as this user (so you don't
-# run it as sudo)
-USER usr
-# yet another way to set env variables for anything
-# running insidue your container
+
+# Copy package files first for better caching
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy application code
+COPY . .
+
+# Expose the port the app runs on (matching docker-compose config)
+EXPOSE 5000
+
+# Set environment variables
 ENV NODE_ENV=production
-# the command that will be executed to launch your app,
-# i.e., when a Docker image becomes a Docker container
-CMD ["node", "backend/server.js"]
+
+# Start the application
+CMD ["npm", "run", "start"]

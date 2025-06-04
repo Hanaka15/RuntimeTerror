@@ -9,22 +9,18 @@ services:
       - backend
 
   backend:
-    image: node:16
-    working_dir: /app
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8282:5000"
-    command: ["npm", "run", "start"]
     environment:
-      - MONGO_URI=mongodb://localhost:27017/RTT
+      - MONGO_URI=mongodb://mongo:27028/RTT
       - SESSION_SECRET=kasomhelst
       - CLIENT_URL=http://localhost:5173
       - GOOGLE_CLIENT_SECRET=123123
       - GOOGLE_CLIENT_ID=123132
-      - PORT=3000
-      
+      - PORT=5000
     depends_on:
       - mongo
 
@@ -32,78 +28,9 @@ services:
     image: mongo:5
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "27028:27017"
     volumes:
-      - mongo-local-debug:/data/db
-
-  test-app-debug:
-    container_name: yt-app-comp-debug
-    labels:
-      info: "THIS SETUP IS FOR DEBUG ONLY"
-    depends_on:
-      test-mongodb-debug:
-        condition: service_healthy
-    restart: always
-    build:
-      context: .
-      dockerfile: ./debug.Dockerfile
-    ports:
-      - "${SERVER_APP_PORT}:${SERVER_APP_PORT}"
-      - "9229:9229"
-    environment:
-      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_admin_pwd
-    secrets:
-      - mongo_admin_pwd
-    env_file:
-      - .mongo.env
-      - .env
-    logging:
-      driver: "local"
-      options:
-        max-size: 10M
-        max-file: 5
-    networks:
-      some-fancy-network:
-        aliases:
-          - ${SERVER_APP_HOSTNAME}
-    volumes:
-      - .:/app
-      - /app/node_modules/
-
-  client-test-app-debug:
-    container_name: client-yt-app-comp-debug
-    labels:
-      info: "THIS SETUP IS FOR DEBUG ONLY"
-    depends_on:
-      test-mongodb-debug:
-        condition: service_healthy
-    restart: always
-    build:
-      context: .
-      dockerfile: ./debug.Dockerfile
-    command: ["node", "frontend/server.js"]
-    ports:
-      - "${CLIENT_APP_PORT}:${CLIENT_APP_PORT}"
-      - "9228:9229"
-    env_file:
-      - .env
-    logging:
-      driver: "local"
-      options:
-        max-size: 10M
-        max-file: 5
-    networks:
-      - some-fancy-network
-    volumes:
-      - .:/app
-      - /app/node_modules/
-
-secrets:
-  mongo_admin_pwd:
-    file: ./secrets.folder/mongo_admin_pwd.txt
-
-networks:
-  some-fancy-network:
+      - mongo-data:/data/db
 
 volumes:
-  mongo-local-debug:
+  mongo-data:
