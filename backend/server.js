@@ -21,8 +21,13 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.json());
 
 app.use(cors({
-  origin: [process.env.CLIENT_URL, "http://localhost:8182"],
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  origin: [
+    process.env.CLIENT_URL, 
+    "http://localhost:8182",
+    "http://localhost:5173", // Add Vite dev server
+    "https://group2.sustainability.it.ntnu.no"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 }));
@@ -39,10 +44,10 @@ app.use(session({
   }),
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? 'auto' : false,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: false, // Force false for now since we're behind nginx proxy
+    sameSite: "lax", // Change from "none" to "lax" for better compatibility
     maxAge: 1000 * 60 * 60 * 24 * 7,
-    domain: process.env.NODE_ENV === "production" ? ".sustainability.it.ntnu.no" : undefined,
+    // Remove domain setting that was causing issues
   }
 }));
 
