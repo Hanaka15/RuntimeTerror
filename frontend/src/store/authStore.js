@@ -27,6 +27,17 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async checkAuth() {
+      try {
+        const { data } = await api.get('/auth/me');
+        this.user = data.researcher;
+        return true;
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        this.user = null;
+        return false;
+      }
+    },
 
     async logout() {
       try {
