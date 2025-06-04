@@ -36,10 +36,13 @@ watch(
     }
 );
 
+// Helper to prefix backend URL if needed
 function getImageUrl(url) {
     if (!url) return '';
+    // If already absolute, return as is
     if (/^https?:\/\//.test(url)) return url;
-    return `http://localhost:3000${url}`;
+    // Otherwise, prefix with backend API address
+    return `https://group2.sustainability.it.ntnu.no/api${url}`;
 }
 
 function submit() {

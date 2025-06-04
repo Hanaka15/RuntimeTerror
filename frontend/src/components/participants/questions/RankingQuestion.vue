@@ -37,8 +37,8 @@ function getImageUrl(url) {
     if (!url) return '';
     // If already absolute, return as is
     if (/^https?:\/\//.test(url)) return url;
-    // Otherwise, prefix with backend address
-    return `http://localhost:3000${url}`;
+    // Otherwise, prefix with backend API address
+    return `https://group2.sustainability.it.ntnu.no/api${url}`;
 }
 
 function dragStart(index) {

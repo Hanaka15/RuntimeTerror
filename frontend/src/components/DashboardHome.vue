@@ -103,13 +103,13 @@ export default {
     async downloadCSV(studyId) {
       try {
         const response = await fetch(
-          `http://localhost:3000/studies/${studyId}/participants/export/csv`,
+          `https://group2.sustainability.it.ntnu.no/api/studies/${studyId}/participants/export/csv`,
           {
             method: "GET",
             headers: {
-              "Accept": "text/csv"
+              Accept: "text/csv",
             },
-            credentials: "include"
+            credentials: "include",
           }
         );
         if (!response.ok) throw new Error("Failed to download CSV");
