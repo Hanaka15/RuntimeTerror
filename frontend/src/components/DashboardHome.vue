@@ -105,7 +105,7 @@ export default {
         const response = await fetch(
           `https://group2.sustainability.it.ntnu.no/api/studies/${studyId}/participants/export/csv`,
           {
-            method: "GET",
+            method: "GET",  
             headers: {
               Accept: "text/csv",
             },

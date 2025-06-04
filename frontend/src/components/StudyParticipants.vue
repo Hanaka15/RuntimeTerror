@@ -173,7 +173,7 @@ export default {
       }
     },
     copyParticipantLink(participantId) {
-      const url = `http://localhost:5173/participant/${participantId}`;
+      const url = `https://group2.sustainability.it.ntnu.no/participant/${participantId}`;
       navigator.clipboard.writeText(url).then(() => {
         this.participantLinkCopied = participantId;
         setTimeout(() => { this.participantLinkCopied = null; }, 1500);
