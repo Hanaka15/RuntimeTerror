@@ -1,15 +1,10 @@
-version: '3.8'
-
 services:
   frontend:
-    image: node:16
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-    command: ["npm", "start"]
+      - "8182:80"
     depends_on:
       - backend
 
@@ -20,10 +15,16 @@ services:
       - ./backend:/app
       - /app/node_modules
     ports:
-      - "5000:5000"
-    command: ["npm", "run", "dev"]
+      - "8282:5000"
+    command: ["npm", "run", "start"]
     environment:
-      MONGO_URI: mongodb://mongo:27017/mydatabase
+      - MONGO_URI=mongodb://localhost:27017/RTT
+      - SESSION_SECRET=kasomhelst
+      - CLIENT_URL=http://localhost:5173
+      - GOOGLE_CLIENT_SECRET=123123
+      - GOOGLE_CLIENT_ID=123132
+      - PORT=3000
+      
     depends_on:
       - mongo
 

@@ -3,7 +3,7 @@
     <div>
     </div>
     <div class="container">
-      <h2>Surveys</h2>
+      <h2>Studies</h2>
       <div class="empty" v-if="!studies.length">You don't have any studies</div>
       <table v-else class="study-table">
         <thead>
