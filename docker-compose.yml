@@ -24,6 +24,8 @@ services:
       - GOOGLE_CLIENT_SECRET=123123
       - GOOGLE_CLIENT_ID=123132
       - PORT=5000
+    volumes:
+      - backend-uploads:/app/uploads
     depends_on:
       - mongo
     networks:
@@ -41,6 +43,7 @@ services:
 
 volumes:
   mongo-data:
+  backend-uploads:
 
 networks:
   app-network:
