@@ -9,22 +9,18 @@ services:
       - backend
 
   backend:
-    image: node:16
-    working_dir: /app
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8282:5000"
-    command: ["npm", "run", "start"]
     environment:
-      - MONGO_URI=mongodb://localhost:27017/RTT
+      - MONGO_URI=mongodb://mongo:27028/RTT
       - SESSION_SECRET=kasomhelst
       - CLIENT_URL=http://localhost:5173
       - GOOGLE_CLIENT_SECRET=123123
       - GOOGLE_CLIENT_ID=123132
-      - PORT=3000
-      
+      - PORT=5000
     depends_on:
       - mongo
 
@@ -32,17 +28,9 @@ services:
     image: mongo:5
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "27028:27017"
     volumes:
-      - mongo-local-debug:/data/db
-
-
-secrets:
-  mongo_admin_pwd:
-    file: ./secrets.folder/mongo_admin_pwd.txt
-
-networks:
-  some-fancy-network:
+      - mongo-data:/data/db
 
 volumes:
-  mongo-local-debug:
+  mongo-data:
