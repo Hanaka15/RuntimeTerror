@@ -7,6 +7,8 @@ services:
       - "8182:80"
     depends_on:
       - backend
+    networks:
+      - app-network
 
   backend:
     build:
@@ -15,22 +17,30 @@ services:
     ports:
       - "8282:5000"
     environment:
-      - MONGO_URI=mongodb://mongo:27028/RTT
+      - MONGO_URI=mongodb://mongo:27017/RTT
       - SESSION_SECRET=kasomhelst
-      - CLIENT_URL=http://localhost:5173
+      - CLIENT_URL=https://group2.sustainability.it.ntnu.no
       - GOOGLE_CLIENT_SECRET=123123
       - GOOGLE_CLIENT_ID=123132
       - PORT=5000
     depends_on:
       - mongo
+    networks:
+      - app-network
 
   mongo:
     image: mongo:5
     container_name: mongo
-    ports:
-      - "27028:27017"
+    expose:
+      - "27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - app-network
 
 volumes:
   mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
